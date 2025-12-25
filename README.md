@@ -90,3 +90,11 @@ This is a collaborative project. To contribute:
 5.  Open a **Pull Request**.
 
 Please ensure all new features are typed correctly with TypeScript and include relevant error handling.
+
+## Contributors
+
+This project is collaboratively developed.
+
+- **Lakshya Chitkul** — Project lead, core architecture
+- **Prem Sai Kota** — Authentication, deployment fixes, documentation, cleanup
+
