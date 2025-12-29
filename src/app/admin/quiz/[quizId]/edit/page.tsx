@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
+import * as React from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useFormState } from 'react-dom';
 import { Button } from '@/components/ui/button';
@@ -95,7 +96,7 @@ export default function EditQuiz() {
     }
   };
 
-  const handleAddQuestion = async (e: FormEvent) => {
+  const handleAddQuestion = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!questionText.trim() || options.some((o: string) => !o.trim())) {
       alert('Please fill all fields');
@@ -290,7 +291,7 @@ export default function EditQuiz() {
                   <Input
                     id="question"
                     value={questionText}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => setQuestionText(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuestionText(e.target.value)}
                     placeholder="Enter your question"
                     required
                   />
@@ -303,7 +304,7 @@ export default function EditQuiz() {
                       <span className="font-semibold w-8">{String.fromCharCode(65 + index)}.</span>
                       <Input
                         value={option}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                           const newOptions = [...options];
                           newOptions[index] = e.target.value;
                           setOptions(newOptions);
@@ -332,7 +333,7 @@ export default function EditQuiz() {
                       min="5"
                       max="300"
                       value={timeLimit}
-                      onChange={(e: ChangeEvent<HTMLInputElement>) => setTimeLimit(parseInt(e.target.value))}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTimeLimit(parseInt(e.target.value))}
                     />
                   </div>
                   <div className="space-y-2">
@@ -344,7 +345,7 @@ export default function EditQuiz() {
                       max="1000"
                       step="10"
                       value={points}
-                      onChange={(e: ChangeEvent<HTMLInputElement>) => setPoints(parseInt(e.target.value))}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPoints(parseInt(e.target.value))}
                     />
                   </div>
                 </div>
