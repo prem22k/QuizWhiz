@@ -42,7 +42,10 @@ NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project_id.firebasestorage.app
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+GOOGLE_GENAI_API_KEY=your_gemini_api_key
 ```
+
+> **Note:** The `GOOGLE_GENAI_API_KEY` is required for the AI quiz generation features. You can get one from [Google AI Studio](https://aistudio.google.com/).
 
 ## 4. Run Locally
 

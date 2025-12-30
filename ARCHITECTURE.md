@@ -46,6 +46,7 @@ The frontend is a **Next.js 16** application using the **App Router**.
     *   Countdown timers.
     *   Answer submission logic.
 *   **`src/lib/firebase-service.ts`**: The abstraction layer for all Firestore interactions.
+*   **`src/ai`**: Contains the Genkit flows and Gemini configuration for generating quiz content.
 
 ## 4. Backend Architecture (Firebase)
 

@@ -8,6 +8,7 @@ Organizing live quizzes for university clubs, tech events, or large gatherings o
 
 ## Key Features
 
+*   **AI-Powered Quiz Generation**: Generate quiz questions instantly using Google's Gemini models via Genkit.
 *   **Real-Time Synchronization**: Game state (lobby, question, results) updates instantly on all client devices using Firestore listeners.
 *   **Admin Dashboard**: Comprehensive interface for creating quizzes, managing content, and controlling live game flow.
 *   **Live Session Management**: Admins can start questions, reveal answers, and advance rounds manually to pace the event.
@@ -19,7 +20,7 @@ Organizing live quizzes for university clubs, tech events, or large gatherings o
 
 *   **Frontend**: Next.js 16 (App Router), React 19, TypeScript
 *   **Styling**: Tailwind CSS, Radix UI
-*   **Backend**: Firebase Firestore (NoSQL Database)
+*   **AI & Backend**: Google Genkit, Gemini API, Firebase Firestore (NoSQL Database)
 *   **Authentication**: Firebase Authentication (Google OAuth)
 *   **Infrastructure**: Vercel (Frontend Hosting), Google Cloud Platform (Backend Services)
 

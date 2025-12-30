@@ -4,6 +4,7 @@
 
 ### Core Game Loop
 - [x] **Quiz Creation**: Admins can create quizzes with a title and description.
+- [x] **AI Generation**: Admins can generate full quizzes from a simple prompt using Gemini AI.
 - [x] **Question Management**: Admins can add multiple-choice questions with 4 options, correct answer, and time limit.
 - [x] **Lobby System**: Participants can join a lobby using a 6-digit code.
 - [x] **Real-Time State Sync**: Game state (Lobby -> Question -> Results) synchronizes instantly across all clients using Firestore listeners.

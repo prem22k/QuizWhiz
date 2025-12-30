@@ -44,3 +44,10 @@ This document records the key architectural choices made during the development 
 *   **Why**:
     *   **Speed**: Rapid UI iteration without writing custom CSS files.
     *   **Accessibility**: Radix primitives ensure keyboard navigation and screen reader support out of the box.
+
+## 7. Google Genkit + Gemini for AI
+*   **Decision**: Use Google's Genkit framework with Gemini models for quiz generation.
+*   **Why**:
+    *   **Integration**: Seamless integration with the Firebase/Google Cloud ecosystem.
+    *   **Type Safety**: Genkit provides strong typing for AI flows.
+    *   **Performance**: Gemini models offer a good balance of speed and quality for creative text generation.
