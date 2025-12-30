@@ -95,6 +95,5 @@ Please ensure all new features are typed correctly with TypeScript and include r
 
 This project is collaboratively developed.
 
-- **Lakshya Chitkul** — Project lead, core architecture
-- **Prem Sai Kota** — Authentication, deployment fixes, documentation, cleanup
-
+* **Lakshya Chitkul** — Project lead, core architecture
+* **Prem Sai Kota** — AI quiz generation (Gemini API), Authentication, deployment fixes, documentation, cleanup
