@@ -32,6 +32,7 @@ export interface Participant {
   name: string;
   joinedAt: number;
   totalScore: number;
+  currentStreak: number;
   answers: ParticipantAnswer[];
 }
 

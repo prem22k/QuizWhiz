@@ -599,6 +599,7 @@ export const joinQuiz = async (
       quizId,
       joinedAt: serverTimestamp(),
       totalScore: 0,
+      currentStreak: 0,
       answers: [],
     };
 
@@ -834,18 +835,18 @@ export const restartGame = async (quizId: string): Promise<void> => {
     // 3. Reset Quiz Status
     batch.update(quizRef, {
       status: 'lobby',
-      currentQuestionIndex: -1, // Reset to -1 for Lobby state (0 would call Q1 immediately if active)
+      currentQuestionIndex: 0,
       stateUpdatedAt: serverTimestamp()
     });
 
-    // 4. Reset Participants (Scores 0, Answers [])
-    // We need to fetch all participants first
+    // 4. Reset Participants (Scores 0, Answers [], Streak 0)
     const participantsRef = collection(db, "quizzes", quizId, "participants");
     const participantsSnap = await getDocs(participantsRef);
 
     participantsSnap.docs.forEach(doc => {
       batch.update(doc.ref, {
         totalScore: 0,
+        currentStreak: 0,
         answers: []
       });
     });
