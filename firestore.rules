@@ -28,12 +28,18 @@ service cloud.firestore {
      *   we allow public write access here implicitly for "joining" and "submitting answers".
      */
     match /quizzes/{quizId}/participants/{participantId} {
-      // Allow public access for game flow
-      // In a stricter app, we would validate the quiz status (e.g. is 'lobby' or 'active')
-      // but for "Quick Play" MVP, public RW is acceptable.
-      allow read, create, update: if true;
+      // 1. Public Read (Leaderboards)
+      allow read: if true;
+
+      // 2. Write (Self or Host)
+      // - Self: The document ID is the User's UID.
+      // - Host: The owner of the parent Quiz.
+      allow write: if request.auth != null && (
+        request.auth.uid == participantId ||
+        request.auth.uid == get(/databases/$(database)/documents/quizzes/$(quizId)).data.ownerId
+      );
       
-      // Sub-collection: Scores
+      // Sub-collection: Scores (Legacy support, though scores are now on participant doc)
       match /scores/{scoreId} {
         allow read, create, update: if true;
       }

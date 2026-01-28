@@ -576,19 +576,23 @@ export const deleteQuestion = async (
  */
 export const joinQuiz = async (
   quizId: string,
-  name: string,
-  userId?: string
+  name: string
+  // userId removed as we force auth
 ): Promise<string> => {
   try {
-    console.log("👤 Joining quiz:", { quizId, name, userId });
+    console.log("👤 Joining quiz:", { quizId, name });
+
+    // 0. Enforce Auth
+    let user = auth.currentUser;
+    if (!user) {
+      console.log("🕵️ Signing in anonymously...");
+      const cred = await signInAnonymously(auth);
+      user = cred.user;
+    }
 
     // 1. Check if quiz exists and is in lobby status
-    // Relax check for Host? Maybe host joins even if not in lobby? 
-    // For now, strict 'lobby' rule is fine, as Host should join before starting.
     const quiz = await getQuiz(quizId);
     if (!quiz) throw new Error("Quiz not found");
-    // Allow owner to join anytime? Or stick to lobby. 
-    // It's safer to stick to lobby for now to verify standard flow.
     if (quiz.status !== "lobby") throw new Error("Quiz is not open for joining");
 
     // Type-safe participant data with serverTimestamp
@@ -610,26 +614,17 @@ export const joinQuiz = async (
       "participants"
     );
 
-    let docId = "";
+    // Use UID as Document ID
+    const userDocRef = doc(participantsRef, user.uid);
+    await setDoc(userDocRef, participantData);
 
-    if (userId) {
-      // Deterministic ID (e.g. Host)
-      const userDocRef = doc(participantsRef, userId);
-      await setDoc(userDocRef, participantData);
-      docId = userId;
-    } else {
-      // Random ID (Guest)
-      const docRef = await addDoc(participantsRef, participantData);
-      docId = docRef.id;
-    }
-
-    console.log("✅ Participant joined:", docId);
-    return docId;
+    return user.uid;
   } catch (error) {
     console.error("❌ Error joining quiz:", error);
     throw error;
   }
 };
+
 
 /**
  * Get all participants for a quiz

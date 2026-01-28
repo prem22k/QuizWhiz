@@ -144,13 +144,18 @@ export default function PlayPage() {
     return () => clearInterval(interval);
   }, [quiz, currentQuestion]);
 
-  // 3. Status Synchronization
+  // 3. Status Synchronization & Late Join
   useEffect(() => {
     if (!quiz) return;
-    if (quiz.status === 'lobby' || quiz.status === 'draft') setViewState('lobby');
-    if (quiz.status === 'completed') setViewState('completed');
-
-    // 'active' is handled by the timer effect to toggle between question/results
+    if (quiz.status === 'lobby' || quiz.status === 'draft') {
+      setViewState('lobby');
+    } else if (quiz.status === 'completed') {
+      setViewState('completed');
+    } else if (quiz.status === 'active') {
+      // Late Join: Immediately show question view.
+      // The timer effect will move to 'results' if time is actually up.
+      setViewState('question');
+    }
   }, [quiz?.status]);
 
   // 4. Host: Calculate Results when entering Results view
@@ -269,7 +274,7 @@ export default function PlayPage() {
 
       <main className="flex-1 container max-w-4xl mx-auto p-4 pb-32">
         {/* LOBBY VIEW */}
-        {viewState === 'lobby' && (
+        {viewState === 'lobby' && (quiz.status === 'lobby' || quiz.status === 'draft') && (
           <div className="flex flex-col items-center space-y-8 py-10">
             <div className="text-center space-y-4">
               <h1 className="text-4xl md:text-6xl font-black text-indigo-900 tracking-tight">{quiz.title}</h1>
