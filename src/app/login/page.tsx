@@ -8,7 +8,8 @@ import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthState
 import { auth } from '@/firebase';
 import { isAdminEmail, registerAdmin } from '@/lib/auth';
 import { Icons } from '@/components/icons';
-import { sendOtp } from '@/app/actions/auth-actions';
+import { sendOtp, logNewUser } from '@/app/actions/auth-actions';
+
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -94,6 +95,10 @@ export default function LoginPage() {
         if (!isAdmin) {
           console.log(`ℹ️ User ${emailToCheck} not in admins collection. Auto-registering...`);
           await registerAdmin(emailToCheck);
+
+          // Log user and send admin notification
+          const nameGuess = user.displayName || emailToCheck.split('@')[0];
+          await logNewUser({ name: nameGuess, email: emailToCheck });
         }
 
         console.log('✅ Admin verification passed. Redirecting...');
@@ -166,6 +171,10 @@ export default function LoginPage() {
         const emailToCheck = user.email.toLowerCase();
         // Register as admin
         await registerAdmin(emailToCheck);
+
+        // Log user and send admin notification
+        const nameGuess = emailToCheck.split('@')[0];
+        await logNewUser({ name: nameGuess, email: emailToCheck });
 
         console.log('✅ Admin registered. Redirecting...');
         router.push('/admin');
