@@ -199,8 +199,6 @@ export default function HomePage() {
               <div className="absolute bottom-0 left-0 w-32 h-32 bg-rose-100 rounded-full blur-[40px] -ml-8 -mb-8" />
               <div className="relative h-14 mb-4">
                  <Smile className="w-10 h-10 text-rose-400 absolute top-0 left-0 animate-bounce" />
-                 <div className="absolute top-2 left-8 text-2xl">🎉</div>
-                 <div className="absolute -top-2 left-12 text-2xl">🔥</div>
               </div>
               <div>
                 <h3 className="text-xl font-bold text-slate-800">Live Reactions</h3>

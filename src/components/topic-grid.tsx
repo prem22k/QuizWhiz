@@ -19,12 +19,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 const TOPICS = [
-    { id: TRIVIA_CATEGORIES.GENERAL_KNOWLEDGE, name: 'General Knowledge', icon: BookOpen, color: 'bg-blue-100 text-blue-600' },
-    { id: TRIVIA_CATEGORIES.MOVIES, name: 'Movies', icon: Film, color: 'bg-indigo-100 text-indigo-600' },
-    { id: TRIVIA_CATEGORIES.SPORTS, name: 'Sports', icon: Trophy, color: 'bg-orange-100 text-orange-600' },
-    { id: TRIVIA_CATEGORIES.GEOGRAPHY, name: 'Geography', icon: Globe, color: 'bg-green-100 text-green-600' },
-    { id: TRIVIA_CATEGORIES.VIDEO_GAMES, name: 'Video Games', icon: Monitor, color: 'bg-purple-100 text-purple-600' },
-    { id: TRIVIA_CATEGORIES.HISTORY, name: 'History', icon: BookOpen, color: 'bg-yellow-100 text-yellow-600' },
+    { id: TRIVIA_CATEGORIES.GENERAL_KNOWLEDGE, name: 'General Knowledge', icon: BookOpen, color: 'bg-blue-50 text-blue-600 border-blue-200 hover:border-blue-400' },
+    { id: TRIVIA_CATEGORIES.MOVIES, name: 'Movies', icon: Film, color: 'bg-indigo-50 text-indigo-600 border-indigo-200 hover:border-indigo-400' },
+    { id: TRIVIA_CATEGORIES.SPORTS, name: 'Sports', icon: Trophy, color: 'bg-orange-50 text-orange-600 border-orange-200 hover:border-orange-400' },
+    { id: TRIVIA_CATEGORIES.GEOGRAPHY, name: 'Geography', icon: Globe, color: 'bg-emerald-50 text-emerald-600 border-emerald-200 hover:border-emerald-400' },
+    { id: TRIVIA_CATEGORIES.VIDEO_GAMES, name: 'Video Games', icon: Monitor, color: 'bg-purple-50 text-purple-600 border-purple-200 hover:border-purple-400' },
+    { id: TRIVIA_CATEGORIES.HISTORY, name: 'History', icon: BookOpen, color: 'bg-amber-50 text-amber-600 border-amber-200 hover:border-amber-400' },
 ];
 
 export default function TopicGrid() {
@@ -84,25 +84,36 @@ export default function TopicGrid() {
                     {TOPICS.map((topic) => (
                         <Card
                             key={topic.id}
-                            className={`cursor-pointer transition-all hover:scale-105 hover:shadow-lg ${loading === topic.id ? 'opacity-70' : ''}`}
+                            className={`
+                                cursor-pointer transition-all duration-300 rounded-2xl border-[1.5px]
+                                hover:border-[2.5px] hover:scale-[1.02] hover:shadow-md
+                                ${topic.color} shadow-sm backdrop-blur-sm
+                                ${loading === topic.id ? 'opacity-70' : ''}
+                            `}
+                            style={{ boxShadow: "inset 0 0 20px 0 rgba(255,255,255,0.5)" }}
                             onClick={() => !loading && handleTopicClick(topic.id, topic.name)}
                         >
                             <CardContent className="p-6 flex flex-col items-center justify-center aspect-square text-center gap-4">
-                                <div className={`p-4 rounded-full ${topic.color}`}>
+                                <div className={`p-4 rounded-full bg-white/80 shadow-sm`}>
                                     {loading === topic.id ? (
                                         <div className="h-6 w-6 animate-spin rounded-full border-2 border-current border-t-transparent" />
                                     ) : (
                                         <topic.icon className="h-6 w-6" />
                                     )}
                                 </div>
-                                <h3 className="font-semibold text-sm md:text-base">{topic.name}</h3>
+                                <h3 className="font-bold text-slate-800 text-sm md:text-base">{topic.name}</h3>
                             </CardContent>
                         </Card>
                     ))}
 
                     {/* Custom Topic Card */}
                     <Card
-                        className={`cursor-pointer transition-all hover:scale-105 hover:shadow-lg border-2 border-dashed border-indigo-300 bg-indigo-50/50 ${loading === 'custom' ? 'opacity-70' : ''}`}
+                        className={`
+                            cursor-pointer transition-all duration-300 rounded-2xl
+                            border-2 border-dashed border-purple-500 bg-purple-50/50
+                            hover:scale-[1.02] hover:shadow-md hover:border-purple-600
+                            ${loading === 'custom' ? 'opacity-70' : ''}
+                        `}
                         onClick={() => setIsCustomOpen(true)}
                     >
                         <CardContent className="p-6 flex flex-col items-center justify-center aspect-square text-center gap-4">
