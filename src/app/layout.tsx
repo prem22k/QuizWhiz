@@ -9,6 +9,8 @@ export const metadata: Metadata = {
   description: 'Create and join real-time quizzes.',
 };
 
+import ConsoleConfig from '@/components/ConsoleConfig';
+
 export default function RootLayout({
   children,
 }: {
@@ -17,6 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="font-body antialiased min-h-screen flex flex-col" suppressHydrationWarning>
+        <ConsoleConfig />
         <ServiceWorkerRegister />
         {children}
         <InstallPWAButton />
