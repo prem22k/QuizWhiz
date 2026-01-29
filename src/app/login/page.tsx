@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth } from '@/firebase';
 import { isAdminEmail, registerAdmin } from '@/lib/auth';
+import { sendWelcomeEmailAction } from '@/app/actions/auth';
 import { Icons } from '@/components/icons';
 
 import { Button } from '@/components/ui/button';
@@ -83,6 +84,11 @@ export default function LoginPage() {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         user = userCredential.user;
         console.log('✅ Registration successful for:', user.email);
+        
+        if (user.email) {
+          // Fire and forget - don't block registration on email sending
+          sendWelcomeEmailAction(user.email, user.displayName || 'Explorer').catch(console.error);
+        }
       } else {
         // 1. Perform Firebase Auth Login
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
