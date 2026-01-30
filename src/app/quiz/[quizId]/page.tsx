@@ -9,18 +9,16 @@ export default function TakeQuizPage({ params }: { params: { quizId: string } })
 
   if (!quiz) {
     return (
-        <div className="flex flex-col w-full">
-            <Header />
-            <main className="flex-1 p-8 flex items-center justify-center">
-                 <Alert variant="destructive" className="max-w-md">
-                    <Terminal className="h-4 w-4" />
-                    <AlertTitle className="font-headline">Quiz Not Found</AlertTitle>
-                    <AlertDescription>
-                        The quiz you are looking for does not exist or may have been moved.
-                    </AlertDescription>
-                </Alert>
-            </main>
+      <div className="flex flex-col min-h-screen bg-[#050505] text-[#ccff00] font-mono items-center justify-center p-6 text-center space-y-4">
+        <div className="w-16 h-16 border-2 border-red-500 rounded-full flex items-center justify-center animate-pulse">
+          <Terminal className="w-8 h-8 text-red-500" />
         </div>
+        <h1 className="text-2xl font-black text-red-500 uppercase tracking-widest">404: Sequence Missing</h1>
+        <p className="text-sm text-gray-500 uppercase tracking-widest">Target coordinates invalid or redacted.</p>
+        <div className="mt-8 border border-[#333] px-4 py-2 hover:bg-[#333] transition-colors cursor-pointer">
+          <a href="/" className="text-xs uppercase">Return to Base</a>
+        </div>
+      </div>
     );
   }
 
