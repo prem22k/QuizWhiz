@@ -130,9 +130,13 @@ export default function AdminDashboard() {
         </div>
 
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-20 space-y-4 opacity-50">
-            <Activity className="w-12 h-12 text-[#ccff00] animate-spin" />
-            <p className="text-[#ccff00] font-mono text-xs animate-pulse">FETCHING SECURE DATA...</p>
+          <div className="flex flex-col items-center justify-center py-20 space-y-6 opacity-80">
+            <div className="relative flex items-center justify-center">
+              <div className="absolute w-16 h-16 border-4 border-[#ccff00]/30 rounded-full animate-ping"></div>
+              <div className="absolute w-12 h-12 border-2 border-[#ccff00] rounded-full animate-spin border-t-transparent"></div>
+              <Terminal className="w-6 h-6 text-[#ccff00]" />
+            </div>
+            <p className="text-[#ccff00] font-mono text-xs animate-pulse uppercase tracking-[0.2em]">ACCESSING MAINFRAME...</p>
           </div>
         ) : quizzes.length === 0 ? (
           <div className="border border-dashed border-[#333] bg-[#0a0a0a] rounded-lg p-12 text-center flex flex-col items-center gap-4">

@@ -24,7 +24,7 @@ export function LobbyView({ quiz, participants, currentParticipant, joinUrl, isH
             {/* Back Button */}
             <button
                 onClick={() => window.location.href = '/'}
-                className="absolute top-4 left-4 z-50 text-white/50 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-full"
+                className="absolute top-4 left-4 z-50 text-white/50 hover:text-[#ccff00] transition-colors p-2 hover:bg-white/5 border border-transparent hover:border-[#ccff00]/30"
             >
                 <ArrowLeft className="w-5 h-5" />
             </button>
@@ -104,8 +104,8 @@ export function LobbyView({ quiz, participants, currentParticipant, joinUrl, isH
 
             {/* QR Code */}
             <div className="mt-auto pt-8 pb-4 relative z-10">
-                <div className="bg-white p-2 rounded-sm opacity-90 hover:opacity-100 transition-opacity">
-                    <QRCode value={joinUrl} size={100} />
+                <div className="bg-black border border-[#ccff00] p-2 opacity-90 hover:opacity-100 transition-opacity shadow-[0_0_15px_rgba(204,255,0,0.2)]">
+                    <QRCode value={joinUrl} size={100} bgColor="#000000" fgColor="#ccff00" />
                 </div>
             </div>
 
