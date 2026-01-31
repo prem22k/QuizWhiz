@@ -1,30 +1,10 @@
-import { mockQuizzes, mockLeaderboard } from '@/lib/mock-data';
-import Header from '@/components/header';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Terminal } from 'lucide-react';
-import LeaderboardClient from './leaderboard-client';
 
-export default function LeaderboardPage({ params }: { params: { quizId: string } }) {
-  const quiz = mockQuizzes.find(q => q.id === params.quizId);
+import ClientComponent from './client';
 
-  if (!quiz) {
-    return (
-        <div className="flex flex-col w-full">
-            <Header />
-            <main className="flex-1 p-8 flex items-center justify-center">
-                 <Alert variant="destructive" className="max-w-md">
-                    <Terminal className="h-4 w-4" />
-                    <AlertTitle className="font-headline">Quiz Not Found</AlertTitle>
-                    <AlertDescription>
-                        The quiz you are looking for does not exist or may have been moved.
-                    </AlertDescription>
-                </Alert>
-            </main>
-        </div>
-    );
-  }
+export async function generateStaticParams() {
+  return [{ quizId: 'demo' }];
+}
 
-  // In a real app, you would fetch leaderboard data for the specific quizId.
-  // For now, we use the same mock leaderboard for all quizzes.
-  return <LeaderboardClient quiz={quiz} leaderboardData={mockLeaderboard} />;
+export default function Page(props: any) {
+  return <ClientComponent {...props} />;
 }

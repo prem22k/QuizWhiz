@@ -5,8 +5,11 @@ export interface Quiz {
   title: string;
   description?: string;
   createdBy: string;
+  ownerId?: string; // UID of creator
   createdAt: number;
   status: 'draft' | 'lobby' | 'active' | 'completed';
+  source?: 'manual' | 'ai' | 'api';
+  questions?: Question[]; // Optional: for API/AI generated quizzes that store questions inline
   currentQuestionIndex: number;
   questionStartTime?: number;
   code: string; // 6-digit join code
@@ -29,17 +32,11 @@ export interface Participant {
   name: string;
   joinedAt: number;
   totalScore: number;
-  answers: ParticipantAnswer[];
+  currentStreak: number;
+  answers: Record<string, number>; // questionIndex -> selectedOptionIndex
 }
 
-export interface ParticipantAnswer {
-  questionId: string;
-  selectedOptionIndex: number;
-  answeredAt: number;
-  isCorrect: boolean;
-  pointsEarned: number;
-  timeToAnswer: number; // milliseconds
-}
+// ParticipantAnswer interface removed as we use a simple map now
 
 export interface QuestionResult {
   questionId: string;

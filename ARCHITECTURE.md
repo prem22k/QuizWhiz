@@ -46,6 +46,7 @@ The frontend is a **Next.js 16** application using the **App Router**.
     *   Countdown timers.
     *   Answer submission logic.
 *   **`src/lib/firebase-service.ts`**: The abstraction layer for all Firestore interactions.
+*   **`src/ai`**: Contains the Genkit flows and Gemini configuration for generating quiz content.
 
 ## 4. Backend Architecture (Firebase)
 
@@ -124,9 +125,9 @@ The core of QuizWhiz is the synchronization loop:
 
 4.  **Answer Submission**:
     *   Participant selects an option.
-    *   **Client-Side Scoring**: Points are calculated based on speed:
-        `Points = BasePoints * max(0.5, 1 - (TimeTaken / TimeLimit))`
-    *   Client writes to `quizzes/{quizId}/participants/{participantId}`.
+    *   **Server-Side Scoring**: Answer is sent to a Firebase Cloud Function (`submitAnswerSecure`).
+    *   Cloud Function fetches the correct answer from Firestore, calculates points, and updates the participant document atomically.
+    *   Response `{ isCorrect, pointsEarned }` is returned to the client.
 
 5.  **Leaderboard**:
     *   Admin (or everyone) views the leaderboard.
@@ -135,8 +136,8 @@ The core of QuizWhiz is the synchronization loop:
 ## 7. Security & Scalability Considerations
 
 *   **Scalability**: Firestore scales automatically. The subcollection pattern (`participants` inside `quizzes`) ensures that fetching a list of quizzes doesn't load all participants, keeping queries efficient.
+*   **Server-Side Scoring**: Scoring logic has been moved to a **Firebase Cloud Function** (`submitAnswerSecure`) to prevent client-side cheating.
 *   **Security Rules (Current)**:
     *   **Read**: Public (for simplicity in this demo version).
-    *   **Write**: Public (allows participants to join and submit answers).
-    *   *Future Improvement*: Lock down `quizzes` write access to the creator (Admin) only, and allow participants to only update their own document.
-*   **Trust Model**: Currently, the client calculates its own score. In a production environment with high stakes, scoring should be moved to a **Firebase Cloud Function** triggered by the answer submission to prevent cheating.
+    *   **Write**: Controlled via Cloud Functions for scoring, direct participant writes for joining.
+    *   *Future Improvement*: Lock down `quizzes` write access to the creator (Admin) only.

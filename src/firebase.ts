@@ -7,6 +7,7 @@
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
 import { getFirestore, Firestore } from 'firebase/firestore';
+import { getFunctions, Functions } from 'firebase/functions';
 
 // Firebase configuration from environment variables
 const firebaseConfig = {
@@ -22,7 +23,9 @@ const firebaseConfig = {
 };
 
 // Validate required environment variables
-if (!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.projectId || !firebaseConfig.appId) {
+const isCI = process.env.CI === 'true' || !!process.env.GITHUB_ACTIONS;
+
+if ((!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.projectId || !firebaseConfig.appId) && !isCI) {
   throw new Error(
     'Missing Firebase configuration. Please ensure all NEXT_PUBLIC_FIREBASE_* environment variables are set in .env.local'
   );
@@ -35,22 +38,37 @@ let app: FirebaseApp;
 if (typeof window !== 'undefined') {
   // Client-side: Use singleton pattern
   if (getApps().length === 0) {
-    app = initializeApp(firebaseConfig);
-    console.log('🔥 Firebase initialized (client-side)');
+    // In CI without config, we don't initialize to avoid errors, or initialize dummy? 
+    // Actually initializeApp might throw if config is empty. 
+    // Let's check config presence.
+    if (firebaseConfig.apiKey) {
+      app = initializeApp(firebaseConfig);
+      console.log('🔥 Firebase initialized (client-side)');
+    } else {
+      // Mock app for CI
+      app = {} as FirebaseApp;
+      console.warn('⚠️ CI Environment detected: Mocking Firebase App');
+    }
   } else {
     app = getApp();
     console.log('🔥 Firebase app reused (client-side)');
   }
 } else {
   // Server-side: Always create new instance (Next.js handles this)
-  app = initializeApp(firebaseConfig);
-  console.log('🔥 Firebase initialized (server-side)');
+  if (firebaseConfig.apiKey) {
+    app = initializeApp(firebaseConfig);
+    console.log('🔥 Firebase initialized (server-side)');
+  } else {
+    app = {} as FirebaseApp;
+    console.warn('⚠️ CI Environment detected: Mocking Firebase App (Server)');
+  }
 }
 
 // Export Firestore and Auth as constants (singleton instances)
 // These are safe to use across the entire app
-export const db: Firestore = getFirestore(app);
-export const auth: Auth = getAuth(app);
+export const db: Firestore = firebaseConfig.apiKey ? getFirestore(app) : ({} as Firestore);
+export const auth: Auth = firebaseConfig.apiKey ? getAuth(app) : ({} as Auth);
+export const functions: Functions = firebaseConfig.apiKey ? getFunctions(app, 'us-central1') : ({} as Functions);
 
 // Export app for advanced use cases
 export { app };

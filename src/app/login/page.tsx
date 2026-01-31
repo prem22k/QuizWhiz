@@ -2,21 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { signInWithEmailAndPassword, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import Link from 'next/link';
+import Image from 'next/image';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth } from '@/firebase';
-import { isAdminEmail } from '@/lib/auth';
-
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from '@/components/ui/card';
+import { isAdminEmail, registerAdmin } from '@/lib/auth';
+import { sendWelcomeEmailAction } from '@/app/actions/auth';
+import { Icons } from '@/components/icons';
+import { sendOtp, logNewUser } from '@/app/actions/auth-actions';
+import { ArrowLeft, Eye, EyeOff, ShieldCheck, Lock, Terminal, AlertTriangle, Fingerprint } from 'lucide-react';
+import clsx from 'clsx';
+import MobileNav from '@/components/mobile-nav';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -24,8 +20,15 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  // Redirect if already logged in (admin status already verified during login)
+  // OTP State
+  const [otpSent, setOtpSent] = useState(false);
+  const [enteredOtp, setEnteredOtp] = useState('');
+  const [generatedOtp, setGeneratedOtp] = useState('');
+
+  // Redirect if already logged in
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -33,179 +36,304 @@ export default function LoginPage() {
         router.push('/admin');
       }
     });
-
     return () => unsubscribe();
   }, [router]);
+
+  // Reset state when switching between login/signup
+  useEffect(() => {
+    setOtpSent(false);
+    setEnteredOtp('');
+    setGeneratedOtp('');
+    setError('');
+  }, [isSignUp]);
+
+  const mapFirebaseError = (error: any) => {
+    switch (error.code) {
+      case 'auth/invalid-credential': setError('INVALID_CREDENTIALS'); break;
+      case 'auth/user-not-found': setError('USER_NOT_FOUND_IN_DATABASE'); break;
+      case 'auth/wrong-password': setError('INCORRECT_ACCESS_KEY'); break;
+      case 'auth/email-already-in-use': setError('IDENTITY_ALREADY_REGISTERED'); break;
+      case 'auth/weak-password': setError('PASSWORD_SECURITY_LEVEL_LOW'); break;
+      default: setError(error.message || 'AUTHENTICATION_FAILED');
+    }
+  };
 
   const handleGoogleLogin = async () => {
     setError('');
     setLoading(true);
-
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
-      const user = result.user;
 
-      if (user.email) {
-        const emailToCheck = user.email.toLowerCase();
+      if (result.user.email) {
+        const emailToCheck = result.user.email.toLowerCase();
         const isAdmin = await isAdminEmail(emailToCheck);
-
         if (!isAdmin) {
-          console.warn(`⛔ User ${emailToCheck} is not in admins collection. Signing out.`);
-          await auth.signOut();
-          setError(`Access denied. The email '${emailToCheck}' is not authorized. Please contact an administrator to have your email added to the allowlist.`);
-          setLoading(false);
-          return;
+          console.log(`ℹ️ Auto-registering admin: ${emailToCheck}`);
+          await registerAdmin(emailToCheck);
+          const nameGuess = result.user.displayName || emailToCheck.split('@')[0];
+          await logNewUser({ name: nameGuess, email: emailToCheck });
         }
-
-        console.log('✅ Admin verification passed. Redirecting...');
         router.push('/admin');
       }
     } catch (error: any) {
       console.error('❌ Google Login failed:', error);
-      if (error.code === 'auth/operation-not-allowed') {
-        setError('Google Sign-In is not enabled in the Firebase Console. Please enable it in Authentication > Sign-in method.');
-      } else {
-        setError(error.message || 'Google Login failed.');
-      }
+      setError('BIOMETRIC_AUTH_FAILED');
       setLoading(false);
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSendOtp = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    setError('');
+    setLoading(true);
+    if (!email || !password) {
+      setError('MISSING_FIELDS');
+      setLoading(false);
+      return;
+    }
+    try {
+      const code = Math.floor(100000 + Math.random() * 900000).toString();
+      setGeneratedOtp(code);
+      const output = await sendOtp(email, code);
+      if (output.success) {
+        setOtpSent(true);
+      } else {
+        setError('UPLINK_FAILED');
+      }
+    } catch (err) {
+      setError('SYSTEM_ERROR');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyAndSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
+    if (enteredOtp !== generatedOtp) {
+      setError('INVALID_OTP');
+      setLoading(false);
+      return;
+    }
+
     try {
-      console.log('🔐 Attempting login...');
-
-      // 1. Perform Firebase Auth Login
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      console.log('✅ Auth successful for:', user.email);
-
-      // 2. Perform Firestore Admin Check
-      if (user.email) {
-        const emailToCheck = user.email.toLowerCase();
-        const isAdmin = await isAdminEmail(emailToCheck);
-
-        if (!isAdmin) {
-          console.warn(`⛔ User ${emailToCheck} is not in admins collection. Signing out.`);
-          await auth.signOut();
-          setError(`Access denied. The email '${emailToCheck}' is not authorized. Please contact an administrator to have your email added to the allowlist.`);
-          setLoading(false);
-          return;
-        }
-
-        console.log('✅ Admin verification passed. Redirecting...');
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      // ... registration logic same as before ...
+      if (userCredential.user.email) {
+        const emailToCheck = userCredential.user.email.toLowerCase();
+        await registerAdmin(emailToCheck);
+        const nameGuess = emailToCheck.split('@')[0];
+        await logNewUser({ name: nameGuess, email: emailToCheck });
+        sendWelcomeEmailAction(emailToCheck, nameGuess).catch(console.error);
         router.push('/admin');
-      } else {
-        throw new Error('User email is missing');
       }
     } catch (error: any) {
-      console.error('❌ Login failed:', error);
-
-      // Map Firebase errors to user-friendly messages
-      switch (error.code) {
-        case 'auth/invalid-credential':
-          setError('Invalid email or password.');
-          break;
-        case 'auth/user-not-found':
-          setError('No account found with this email.');
-          break;
-        case 'auth/wrong-password':
-          setError('Incorrect password.');
-          break;
-        case 'auth/too-many-requests':
-          setError('Too many failed attempts. Please try again later.');
-          break;
-        case 'auth/operation-not-allowed':
-          setError('Email/Password Sign-In is not enabled in the Firebase Console. Please enable it in Authentication > Sign-in method.');
-          break;
-        default:
-          setError(error.message || 'Login failed. Please try again.');
-      }
-
+      mapFirebaseError(error);
       setLoading(false);
     }
   };
 
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    try {
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      if (result.user.email) {
+        const emailToCheck = result.user.email.toLowerCase();
+        const isAdmin = await isAdminEmail(emailToCheck);
+        if (!isAdmin) await registerAdmin(emailToCheck);
+        router.push('/admin');
+      }
+    } catch (error: any) {
+      mapFirebaseError(error);
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    if (isSignUp) {
+      otpSent ? handleVerifyAndSignup(e) : handleSendOtp(e);
+    } else {
+      handleLogin(e);
+    }
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold">Admin Login</CardTitle>
-          <CardDescription>
-            Sign in with your admin email to access the quiz management panel
-          </CardDescription>
-        </CardHeader>
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
+    <div className="min-h-screen w-full bg-[#050505] font-display text-white relative overflow-hidden flex flex-col lg:flex-row">
+
+      {/* Background Noise & Scanlines */}
+      <div className="absolute inset-0 pointer-events-none opacity-20 z-0 mix-blend-overlay" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E")` }}></div>
+      <div className="absolute inset-0 pointer-events-none z-0 opacity-10" style={{
+        background: 'linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2))',
+        backgroundSize: '100% 4px'
+      }}></div>
+
+      {/* Left Side - Visuals (Desktop) */}
+      <div className="hidden lg:flex w-1/2 items-center justify-center relative border-r border-[#222]">
+        <div className="absolute inset-0 bg-[#0a0a0a]"></div>
+        <div className="relative z-10 flex flex-col items-center gap-6 opacity-60">
+          <ShieldCheck className="w-32 h-32 text-[#ccff00] animate-pulse" />
+          <div className="text-center space-y-2">
+            <h2 className="text-2xl font-mono text-[#ccff00] tracking-[0.3em] uppercase">Restricted Area</h2>
+            <p className="text-xs font-mono text-gray-500">AUTHORIZED PERSONNEL ONLY</p>
+          </div>
+          <div className="font-mono text-[10px] text-gray-700 mt-12 whitespace-pre">
+            {`> ESTABLISHING SECURE CONNECTION...
+> ENCRYPTING DATA STREAMS...
+> VERIFYING IDENTITY TOKEN...
+> ACCESS: PENDING`}
+          </div>
+        </div>
+      </div>
+
+      {/* Right Side - Form */}
+      <div className="flex-1 flex flex-col relative z-10 h-screen overflow-y-auto">
+
+        <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-12 w-full max-w-lg mx-auto">
+
+          {/* Header */}
+          <div className="w-full text-center space-y-6 mb-12">
+            <Link href="/" className="inline-flex items-center gap-2 group">
+              <div className="w-10 h-10 bg-[#ccff00] flex items-center justify-center text-black font-black text-xl rounded-sm group-hover:rotate-6 transition-transform">
+                Q
+              </div>
+            </Link>
+
+            <div className="relative inline-block">
+              <span className="absolute -inset-1 bg-[#ccff00]/20 skew-x-12 blur-sm"></span>
+              <h1 className="relative text-3xl md:text-4xl font-black uppercase tracking-tighter text-white">
+                {isSignUp ? 'Initialize Access' : 'System Login'}
+              </h1>
+            </div>
+
+            <p className="text-gray-500 font-mono text-xs uppercase tracking-widest">
+              {isSignUp ? (otpSent ? `> AWAITING OTP FOR: ${email}` : '> CREATE NEW IDENTITY') : '> ENTER CREDENTIALS'}
+            </p>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="w-full space-y-6">
+
             {error && (
-              <div className="rounded-md bg-red-50 p-3 text-sm text-red-800">
+              <div className="bg-red-500/10 border border-red-500/50 p-4 flex items-center gap-3 text-red-500 text-xs font-mono tracking-widest uppercase animate-pulse">
+                <AlertTriangle className="w-4 h-4" />
                 {error}
               </div>
             )}
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@quizwhiz.com"
-                required
-                disabled={loading}
-                autoComplete="email"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
-                required
-                disabled={loading}
-                autoComplete="current-password"
-              />
-            </div>
-          </CardContent>
-          <CardFooter className="flex flex-col gap-4">
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={loading || !email || !password}
-            >
-              {loading ? 'Signing in...' : 'Sign In'}
-            </Button>
-            <div className="relative w-full">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
+
+            {!otpSent ? (
+              <div className="space-y-4">
+
+                <div className="space-y-1 group">
+                  <label className="text-[10px] font-mono text-gray-500 uppercase tracking-widest group-focus-within:text-[#ccff00] transition-colors">Identity (Email)</label>
+                  <div className="relative">
+                    <input
+                      type="email"
+                      required
+                      className="w-full bg-[#0a0a0a] border border-[#333] p-4 text-white font-mono placeholder:text-gray-800 focus:border-[#ccff00] focus:outline-none focus:shadow-[0_0_15px_rgba(204,255,0,0.2)] transition-all"
+                      placeholder="agent@quizwhiz.com"
+                      value={email}
+                      onChange={e => setEmail(e.target.value)}
+                    />
+                    <div className="absolute right-0 top-0 h-full w-1 bg-[#ccff00] opacity-0 group-focus-within:opacity-100 transition-opacity"></div>
+                  </div>
+                </div>
+
+                <div className="space-y-1 group">
+                  <label className="text-[10px] font-mono text-gray-500 uppercase tracking-widest group-focus-within:text-[#ccff00] transition-colors">Access Key (Password)</label>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      required
+                      className="w-full bg-[#0a0a0a] border border-[#333] p-4 text-white font-mono placeholder:text-gray-800 focus:border-[#ccff00] focus:outline-none focus:shadow-[0_0_15px_rgba(204,255,0,0.2)] transition-all"
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={e => setPassword(e.target.value)}
+                    />
+                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 hover:text-[#ccff00]">
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+
               </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                  Or continue with
+            ) : (
+              <div className="space-y-4 animate-in slide-in-from-right">
+                <div className="space-y-1 group">
+                  <label className="text-[10px] font-mono text-[#ccff00] uppercase tracking-widest animate-pulse">Enter One-Time-Password</label>
+                  <input
+                    type="text"
+                    maxLength={6}
+                    required
+                    className="w-full bg-[#0a0a0a] border border-[#ccff00] p-4 text-center text-2xl text-[#ccff00] font-mono tracking-[1em] focus:outline-none focus:shadow-[0_0_30px_rgba(204,255,0,0.3)]"
+                    value={enteredOtp}
+                    onChange={e => setEnteredOtp(e.target.value)}
+                    placeholder="000000"
+                  />
+                </div>
+                <button type="button" onClick={() => setOtpSent(false)} className="text-xs font-mono text-gray-500 hover:text-[#ccff00] underline decoration-dashed underline-offset-4">
+                  {`< RE-CONFIGURE IDENTITY`}
+                </button>
+              </div>
+            )}
+
+            <div className="pt-4 space-y-4">
+              <button
+                type="submit"
+                disabled={loading}
+                className="group relative w-full h-14 bg-[#ccff00] flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <div className="absolute top-0 right-0 w-4 h-4 bg-black transform rotate-45 translate-x-2 -translate-y-2"></div>
+                <div className="absolute bottom-0 left-0 w-4 h-4 bg-black transform rotate-45 -translate-x-2 translate-y-2"></div>
+
+                <span className="text-black font-black uppercase tracking-widest group-hover:tracking-[0.3em] transition-all flex items-center gap-2">
+                  {loading ? 'PROCESSING...' : (isSignUp ? (otpSent ? 'VERIFY & EXECUTE' : 'SEND VERIFICATION CODE') : 'INITIATE LOGIN')}
+                  {!loading && <Terminal className="w-4 h-4" />}
                 </span>
-              </div>
+              </button>
+
+              {!otpSent && (
+                <>
+                  <div className="relative flex items-center justify-center my-6">
+                    <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-[#222]"></div></div>
+                    <span className="relative bg-[#050505] px-4 text-[10px] font-mono text-gray-600 uppercase">Or Authenticate Via</span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleGoogleLogin}
+                    disabled={loading}
+                    className="w-full h-12 border border-[#333] hover:border-[#ccff00] hover:bg-[#ccff00]/5 flex items-center justify-center gap-3 transition-all group"
+                  >
+                    <Fingerprint className="w-4 h-4 text-gray-500 group-hover:text-[#ccff00]" />
+                    <span className="text-xs font-mono text-gray-400 group-hover:text-white uppercase tracking-widest">Use Biometric Auth (Google)</span>
+                  </button>
+                </>
+              )}
             </div>
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              onClick={handleGoogleLogin}
-              disabled={loading}
+
+          </form>
+
+          {/* Footer Switch */}
+          <div className="mt-8 text-center">
+            <p className="text-xs font-mono text-gray-600 uppercase mb-2">
+              {isSignUp ? '> ALREADY REGISTERED?' : '> NEW PERSONNEL?'}
+            </p>
+            <button
+              onClick={() => setIsSignUp(!isSignUp)}
+              className="text-[#ccff00] font-bold uppercase tracking-wider border-b border-[#ccff00] hover:border-transparent hover:bg-[#ccff00] hover:text-black transition-all px-1"
             >
-              <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512"><path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"></path></svg>
-              Google
-            </Button>
-          </CardFooter>
-        </form>
-      </Card>
+              {isSignUp ? 'ACCESS EXISTING ACCOUNT' : 'REGISTER NEW IDENTITY'}
+            </button>
+          </div>
+
+        </div>
+      </div>
+      <MobileNav />
     </div>
   );
 }
