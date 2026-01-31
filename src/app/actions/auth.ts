@@ -1,11 +1,11 @@
-'use server';
-
-import { emailService } from '@/lib/email/service';
+import { functions } from '@/firebase';
+import { httpsCallable } from 'firebase/functions';
 
 export async function sendWelcomeEmailAction(email: string, name?: string) {
   try {
-    console.log(`📧 Sending welcome email to ${email}`);
-    await emailService.sendWelcome(email, name);
+    console.log(`📧 Calling sendWelcomeEmail Cloud Function for ${email}`);
+    const sendWelcomeEmailFn = httpsCallable(functions, 'sendWelcomeEmail');
+    await sendWelcomeEmailFn({ email, name });
     return { success: true };
   } catch (error) {
     console.error('Failed to send welcome email:', error);
@@ -15,8 +15,10 @@ export async function sendWelcomeEmailAction(email: string, name?: string) {
 
 export async function sendOtpEmailAction(email: string, code: string) {
   try {
-    console.log(`📧 Sending OTP email to ${email}`);
-    await emailService.sendOtp(email, code);
+    console.log(`📧 Calling sendOtp Cloud Function for ${email}`);
+    // Reusing the sendOtp function we defined earlier which expects { email, code }
+    const sendOtpFn = httpsCallable(functions, 'sendOtp');
+    await sendOtpFn({ email, code });
     return { success: true };
   } catch (error) {
     console.error('Failed to send OTP email:', error);

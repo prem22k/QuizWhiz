@@ -25,7 +25,8 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "start-web": "next dev --turbopack -p 9002",
-    "build-app": "NEXT_PUBLIC_ELECTRON_BUILD=true next build && electron-builder"
+    "build-app": "NEXT_PUBLIC_ELECTRON_BUILD=true next build && electron-builder",
+    "sync": "npx cap sync"
   },
   "build": {
     "appId": "com.quizwhiz.app",
@@ -50,10 +51,11 @@
   },
   "dependencies": {
     "@capacitor-community/keep-awake": "^8.0.0",
-    "@capacitor/android": "^8.0.2",
-    "@capacitor/cli": "^8.0.2",
+    "@capacitor/camera": "^8.0.0",
     "@capacitor/core": "^8.0.2",
     "@capacitor/haptics": "^8.0.0",
+    "@capacitor/preferences": "^8.0.0",
+    "@capacitor/push-notifications": "^8.0.0",
     "@capacitor/status-bar": "^8.0.0",
     "@dataconnect/generated": "file:src/dataconnect-generated",
     "@genkit-ai/google-genai": "^1.20.0",
@@ -110,6 +112,8 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@capacitor/android": "^8.0.2",
+    "@capacitor/cli": "^8.0.2",
     "@types/node": "^20",
     "@types/nodemailer": "^7.0.9",
     "@types/react": "npm:types-react@^19.0.0-rc.1",
