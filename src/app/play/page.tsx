@@ -112,9 +112,7 @@ export default function HomePage() {
     }
   };
 
-  // Split Logic
-  const leftColumnIndices = [0, 2, 4, 6];
-  const rightColumnIndices = [1, 3, 5];
+
 
   return (
     <div className="min-h-[100dvh] bg-[#050505] text-white font-sans overflow-x-hidden selection:bg-[#ccff00] selection:text-black">
@@ -125,7 +123,7 @@ export default function HomePage() {
         <Zap strokeWidth={1} className="w-[600px] h-[600px] text-white opacity-[0.03] -rotate-[15deg] absolute translate-x-12 translate-y-20" />
       </div>
 
-      <div className="relative z-10 flex flex-col min-h-[100dvh] pb-24 w-full max-w-md mx-auto border-x border-white/5 bg-[#050505]">
+      <div className="relative z-10 flex flex-col min-h-[100dvh] pb-24 w-full max-w-md md:max-w-7xl mx-auto border-x border-white/5 bg-[#050505]">
 
         {/* Mobile Navigation Bar */}
         <MobileNav />
@@ -157,113 +155,60 @@ export default function HomePage() {
         </section>
 
         {/* Grid */}
-        <div className="flex px-4 gap-4 items-start">
-
-          {/* Left Column */}
-          <div className="flex flex-col gap-6 w-1/2">
-            {leftColumnIndices.map((index) => {
-              const topic = TOPICS[index];
-              const theme = THEMES[topic.id];
-              return (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 px-4 gap-4 items-start">
+          {TOPICS.map((topic) => {
+            const theme = THEMES[topic.id];
+            return (
+              <div
+                key={topic.id}
+                onClick={() => handleTopicClick(topic.id, topic.name)}
+                className={clsx(
+                  "group relative w-full bg-[#111] border-4 border-[#ccff00] flex flex-col justify-end overflow-hidden transition-transform active:scale-95 cursor-pointer shadow-[0_0_20px_rgba(204,255,0,0.1)] hover:shadow-[0_0_30px_rgba(204,255,0,0.2)]",
+                  theme.aspect
+                )}>
                 <div
-                  key={topic.id}
-                  onClick={() => handleTopicClick(topic.id, topic.name)}
-                  className={clsx(
-                    "group relative w-full bg-[#111] border-4 border-[#ccff00] flex flex-col justify-end overflow-hidden transition-transform active:scale-95 cursor-pointer shadow-[0_0_20px_rgba(204,255,0,0.1)] hover:shadow-[0_0_30px_rgba(204,255,0,0.2)]",
-                    theme.aspect
-                  )}>
-                  <div
-                    className="absolute inset-0 bg-cover bg-center opacity-60 mix-blend-luminosity group-hover:mix-blend-normal group-hover:opacity-100 transition-all duration-500"
-                    style={{ backgroundImage: `url('${theme.bgImage}')` }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+                  className="absolute inset-0 bg-cover bg-center opacity-60 mix-blend-luminosity group-hover:mix-blend-normal group-hover:opacity-100 transition-all duration-500"
+                  style={{ backgroundImage: `url('${theme.bgImage}')` }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
 
-                  {theme.bleedingText && (
-                    <span
-                      className={theme.bleedingClass}
-                      style={theme.bleedingClass.includes('writing-vertical-rl') ? { writingMode: 'vertical-rl' } : {}}
-                    >
-                      {theme.bleedingText}
-                    </span>
-                  )}
+                {theme.bleedingText && (
+                  <span
+                    className={theme.bleedingClass}
+                    style={theme.bleedingClass.includes('writing-vertical-rl') ? { writingMode: 'vertical-rl' } : {}}
+                  >
+                    {theme.bleedingText}
+                  </span>
+                )}
 
-                  <div className="relative z-10 p-3 border-t-2 border-[#ccff00]/50 bg-black/80 backdrop-blur-md flex justify-between items-end">
-                    <div>
-                      <h3 className="text-white text-lg font-bold leading-none tracking-tight uppercase font-display">
-                        {topic.name}
-                      </h3>
-                    </div>
-                    {/* Replaced 'Level' with Icon */}
-                    <topic.icon className="w-5 h-5 text-[#ccff00]" />
+                <div className="relative z-10 p-3 border-t-2 border-[#ccff00]/50 bg-black/80 backdrop-blur-md flex justify-between items-end">
+                  <div>
+                    <h3 className="text-white text-lg font-bold leading-none tracking-tight uppercase font-display">
+                      {topic.name}
+                    </h3>
                   </div>
-
-                  {loading === topic.id && (
-                    <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-20">
-                      <div className="w-8 h-8 border-4 border-[#ccff00] border-t-transparent rounded-full animate-spin"></div>
-                    </div>
-                  )}
+                  {/* Replaced 'Level' with Icon */}
+                  <topic.icon className="w-5 h-5 text-[#ccff00]" />
                 </div>
-              )
-            })}
-          </div>
 
-          {/* Right Column */}
-          <div className="flex flex-col gap-6 w-1/2 mt-12">
-            {rightColumnIndices.map((index) => {
-              const topic = TOPICS[index];
-              const theme = THEMES[topic.id];
-              return (
-                <div
-                  key={topic.id}
-                  onClick={() => handleTopicClick(topic.id, topic.name)}
-                  className={clsx(
-                    "group relative w-full bg-[#111] border-4 border-[#ccff00] flex flex-col justify-end overflow-hidden transition-transform active:scale-95 cursor-pointer shadow-[0_0_20px_rgba(204,255,0,0.1)] hover:shadow-[0_0_30px_rgba(204,255,0,0.2)]",
-                    theme.aspect
-                  )}>
-                  <div
-                    className="absolute inset-0 bg-cover bg-center opacity-60 mix-blend-luminosity group-hover:mix-blend-normal group-hover:opacity-100 transition-all duration-500"
-                    style={{ backgroundImage: `url('${theme.bgImage}')` }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
-
-                  {theme.bleedingText && (
-                    <span
-                      className={theme.bleedingClass}
-                      style={theme.bleedingClass.includes('writing-vertical-rl') ? { writingMode: 'vertical-rl' } : {}}
-                    >
-                      {theme.bleedingText}
-                    </span>
-                  )}
-
-                  <div className="relative z-10 p-3 border-t-2 border-[#ccff00]/50 bg-black/80 backdrop-blur-md flex justify-between items-end">
-                    <div>
-                      <h3 className="text-white text-lg font-bold leading-none tracking-tight uppercase font-display">
-                        {topic.name}
-                      </h3>
-                    </div>
-                    {/* Replaced 'Level' with Icon */}
-                    <topic.icon className="w-5 h-5 text-[#ccff00]" />
+                {loading === topic.id && (
+                  <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-20">
+                    <div className="w-8 h-8 border-4 border-[#ccff00] border-t-transparent rounded-full animate-spin"></div>
                   </div>
+                )}
+              </div>
+            )
+          })}
 
-                  {loading === topic.id && (
-                    <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-20">
-                      <div className="w-8 h-8 border-4 border-[#ccff00] border-t-transparent rounded-full animate-spin"></div>
-                    </div>
-                  )}
-                </div>
-              )
-            })}
-
-            {/* Special */}
-            <div
-              onClick={() => setIsCustomOpen(true)}
-              className="group relative w-full bg-[#ccff00] border-4 border-[#ccff00] flex flex-col justify-center items-center p-4 overflow-hidden transition-transform active:scale-95 cursor-pointer aspect-square shadow-[0_0_20px_rgba(204,255,0,0.4)]"
-            >
-              <Sparkles className="text-black w-10 h-10 mb-2 animate-pulse" />
-              <h3 className="text-black text-lg font-black leading-none tracking-tight uppercase text-center font-display">
-                CUSTOM<br />LOOT
-              </h3>
-            </div>
+          {/* Special */}
+          <div
+            onClick={() => setIsCustomOpen(true)}
+            className="group relative w-full bg-[#ccff00] border-4 border-[#ccff00] flex flex-col justify-center items-center p-4 overflow-hidden transition-transform active:scale-95 cursor-pointer aspect-square shadow-[0_0_20px_rgba(204,255,0,0.4)]"
+          >
+            <Sparkles className="text-black w-10 h-10 mb-2 animate-pulse" />
+            <h3 className="text-black text-lg font-black leading-none tracking-tight uppercase text-center font-display">
+              CUSTOM<br />LOOT
+            </h3>
           </div>
         </div>
 
