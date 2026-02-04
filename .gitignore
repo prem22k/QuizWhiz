@@ -56,4 +56,46 @@ ui-debug.log
 .genkit/
 
 # Google Credentials
-google-credentials.json
+
+# Tauri
+src-tauri/target/
+src-tauri/gen/
+
+# Android
+android/
+local.properties
+
+# Agent & Tool Configuration
+.agents/
+.augment/
+.claude/
+.cline/
+.codebuddy/
+.codex/
+.commandcode/
+.continue/
+.crush/
+.cursor/
+.factory/
+.gemini/
+.goose/
+.iflow/
+.junie/
+.kilocode/
+.kiro/
+.kode/
+.mcpjam/
+.mux/
+.neovate/
+.openclaude/
+.opencode/
+.openhands/
+.pi/
+.pochi/
+.qoder/
+.qwen/
+.roo/
+.trae/
+.vibe/
+.windsurf/
+.zencoder/
