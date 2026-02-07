@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { ConstellationBackground } from '@/components/ui/constellation-background';
 import { BentoFeatures } from '@/components/ui/bento-features';
 import { InfiniteMarquee } from '@/components/ui/infinite-marquee';
-import MobileNav from '@/components/mobile-nav';
+import Navbar from '@/components/Navbar';
 
 const features = [
   {
@@ -155,7 +155,7 @@ export default function LandingPage() {
               variant="outline"
               size="lg"
               onClick={() => router.push('/host/create')}
-              className="h-16 px-12 text-lg font-bold border-white/20 bg-white/5 backdrop-blur-md text-white hover:bg-white/10 hover:border-primary/50 hover:text-primary hover:scale-105 transition-all duration-300 shadow-lg"
+              className="h-16 px-10 text-base backdrop-blur-sm bg-background/50 hover:bg-white hover:text-black hover:scale-105 transition-all duration-300"
             >
               Create Quiz
             </Button>
@@ -288,8 +288,8 @@ export default function LandingPage() {
         </div>
       </footer>
 
-      {/* Mobile Nav */}
-      <MobileNav />
+      {/* Navigation */}
+      <Navbar />
     </div>
   );
 }
