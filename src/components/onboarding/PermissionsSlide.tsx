@@ -65,7 +65,7 @@ const PermissionsSlide: React.FC<PermissionsSlideProps> = ({ onComplete }) => {
                 </div>
                 <h2 className="text-3xl font-bold mb-2">Almost Ready!</h2>
                 <p className="text-gray-400 max-w-xs mx-auto text-sm">
-                    To provide the full experience, QuizWhiz needs access to a few device features.
+                    We need access to a few features to make the game work.
                 </p>
             </motion.div>
 
@@ -82,7 +82,7 @@ const PermissionsSlide: React.FC<PermissionsSlideProps> = ({ onComplete }) => {
 
                 {/* Camera Permission Item */}
                 <PermissionItem
-                    title="Camera Access"
+                    title="Camera"
                     description="Scan QR codes to join games instantly."
                     icon={Camera}
                     isGranted={cameraGranted}
@@ -101,7 +101,7 @@ const PermissionsSlide: React.FC<PermissionsSlideProps> = ({ onComplete }) => {
                     size="lg"
                     className={`w-full h-14 text-lg font-bold transition-all duration-300 ${allGranted ? 'bg-green-500 hover:bg-green-600 text-white shadow-[0_0_20px_rgba(34,197,94,0.4)]' : 'bg-gray-800 text-gray-400'}`}
                 >
-                    {allGranted ? "All Set! Let's Go" : "Grant Permissions to Continue"}
+                    {allGranted ? "All Set! Let's Go" : "Enable Features to Continue"}
                 </Button>
             </motion.div>
 
@@ -127,8 +127,8 @@ const PermissionItem = ({ title, description, icon: Icon, isGranted, onGrant }: 
                 whileTap={{ scale: 0.95 }}
                 onClick={isGranted ? undefined : onGrant}
                 className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${isGranted
-                        ? 'bg-green-500 text-white cursor-default'
-                        : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                    ? 'bg-green-500 text-white cursor-default'
+                    : 'bg-indigo-600 hover:bg-indigo-700 text-white'
                     }`}
             >
                 <AnimatePresence mode='wait'>

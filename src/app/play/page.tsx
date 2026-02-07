@@ -135,13 +135,13 @@ export default function HomePage() {
               <Brain className="w-5 h-5" />
             </div>
             <div className="flex flex-col">
-              <span className="text-[10px] text-[#ccff00]/60 font-mono tracking-[0.2em] leading-none uppercase">Uplink_Stable</span>
-              <span className="text-white text-xs font-black tracking-tight leading-none mt-1 uppercase font-mono">Guest Operator</span>
+              <span className="text-[10px] text-[#ccff00]/60 font-mono tracking-[0.2em] leading-none uppercase">QuizWhiz</span>
+              <span className="text-white text-xs font-black tracking-tight leading-none mt-1 uppercase font-mono">Guest Player</span>
             </div>
           </div>
           <div className="flex items-center justify-end gap-2 bg-black/50 px-3 py-1.5 border border-[#ccff00]/20 rounded-none backdrop-blur-md shadow-[inset_0_0_15px_rgba(204,255,0,0.05)]">
             <span className="block w-1.5 h-1.5 bg-[#ccff00] animate-pulse"></span>
-            <p className="text-[#ccff00] text-[10px] font-mono font-bold tracking-[0.3em] uppercase">System Online</p>
+            <p className="text-[#ccff00] text-[10px] font-mono font-bold tracking-[0.3em] uppercase">Online</p>
           </div>
         </header>
 
@@ -149,7 +149,7 @@ export default function HomePage() {
         <section className="px-6 py-6">
           <h1 className="text-white text-5xl font-black leading-[0.85] tracking-tighter uppercase font-display">
             Select<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ccff00] to-yellow-400 opacity-90">Cartridge</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ccff00] to-yellow-400 opacity-90">Topic</span>
           </h1>
           <div className="h-1 w-24 bg-[#ccff00] mt-4"></div>
         </section>
@@ -207,7 +207,7 @@ export default function HomePage() {
           >
             <Sparkles className="text-black w-10 h-10 mb-2 animate-pulse" />
             <h3 className="text-black text-lg font-black leading-none tracking-tight uppercase text-center font-display">
-              CUSTOM<br />LOOT
+              CUSTOM<br />QUIZ
             </h3>
           </div>
         </div>
@@ -218,9 +218,9 @@ export default function HomePage() {
         <Dialog open={isCustomOpen} onOpenChange={setIsCustomOpen}>
           <DialogContent className="sm:max-w-md bg-[#111] border-2 border-[#ccff00] text-white">
             <DialogHeader>
-              <DialogTitle className="text-[#ccff00] font-display uppercase tracking-wide">Custom Cartridge</DialogTitle>
+              <DialogTitle className="text-[#ccff00] font-display uppercase tracking-wide">Create Custom Quiz</DialogTitle>
               <DialogDescription className="text-gray-400">
-                Insert a topic to generate a unique level.
+                Enter a topic to generate a unique quiz.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">

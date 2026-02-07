@@ -75,7 +75,7 @@ export default function QuizControl({ quizId: propQuizId }: QuizControlProps = {
 
   const handleStartFirstQuestion = async () => {
     if (questions.length === 0) {
-      alert('ERROR: SEQUENCE DATA CORRUPTED. NO BLOCKS FOUND.');
+      alert('Error: No questions found.');
       return;
     }
     await startQuestion(quizId, 0);
@@ -103,7 +103,7 @@ export default function QuizControl({ quizId: propQuizId }: QuizControlProps = {
   };
 
   const handleEndQuiz = async () => {
-    if (confirm('WARNING: TERMINATE SEQUENCE PREMATURELY?')) {
+    if (confirm('Are you sure you want to end the game early?')) {
       await endQuiz(quizId);
     }
   };
@@ -112,7 +112,7 @@ export default function QuizControl({ quizId: propQuizId }: QuizControlProps = {
     <div className="flex min-h-screen items-center justify-center bg-[#050505] text-[#ccff00] font-mono">
       <div className="flex flex-col items-center gap-4 animate-pulse">
         <Radio className="w-12 h-12" />
-        <span className="tracking-widest">ESTABLISHING COMMAND LINK...</span>
+        <span className="tracking-widest">Connecting...</span>
       </div>
     </div>
   );
@@ -142,7 +142,7 @@ export default function QuizControl({ quizId: propQuizId }: QuizControlProps = {
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 text-[#ccff00]">
             <Wifi className="w-5 h-5 animate-pulse" />
-            <span className="font-mono text-sm tracking-widest uppercase">Mission Control</span>
+            <span className="font-mono text-sm tracking-widest uppercase">Live Game</span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -173,22 +173,22 @@ export default function QuizControl({ quizId: propQuizId }: QuizControlProps = {
                   quiz.status === 'lobby' ? "bg-yellow-500 border-yellow-500" :
                     quiz.status === 'completed' ? "bg-blue-500 border-blue-500" : "bg-gray-500 border-gray-500"
               )}>
-                STATUS: {quiz.status}
+                Status: {quiz.status}
               </span>
-              <span>NET_ID: {quiz.code}</span>
+              <span>Code: {quiz.code}</span>
             </div>
           </div>
 
           <div className="flex gap-6">
             <div className="text-right">
-              <p className="text-[10px] font-mono text-gray-500 uppercase">Active Agents</p>
+              <p className="text-[10px] font-mono text-gray-500 uppercase">Players</p>
               <div className="text-3xl font-black text-white flex justify-end items-center gap-2">
                 {participants.length} <Users className="w-5 h-5 text-[#ccff00]" />
               </div>
             </div>
             {quiz.status === 'active' && (
               <div className="text-right">
-                <p className="text-[10px] font-mono text-gray-500 uppercase">T-Minus</p>
+                <p className="text-[10px] font-mono text-gray-500 uppercase">Time Left</p>
                 <div className={clsx(
                   "text-3xl font-black flex justify-end items-center gap-2 tabular-nums",
                   timeRemaining <= 5 ? "text-red-500 animate-pulse" : "text-[#ccff00]"
@@ -208,7 +208,7 @@ export default function QuizControl({ quizId: propQuizId }: QuizControlProps = {
             {/* Controls */}
             <div className="bg-[#0a0a0a] border border-[#333] p-1">
               <div className="h-6 bg-[#111] px-3 flex items-center justify-between border-b border-[#333]">
-                <span className="text-[10px] font-mono text-gray-500 uppercase">Command_Override_Panel</span>
+                <span className="text-[10px] font-mono text-gray-500 uppercase">Control Panel</span>
                 <div className="flex gap-1">
                   <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
                   <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
@@ -218,20 +218,20 @@ export default function QuizControl({ quizId: propQuizId }: QuizControlProps = {
               <div className="p-6 space-y-4">
                 {quiz.status === 'draft' && (
                   <button onClick={handleStartLobby} className="w-full h-16 bg-[#ccff00] hover:bg-white text-black font-black uppercase tracking-widest transition-colors flex items-center justify-center gap-3">
-                    <Radio className="w-6 h-6" /> Initialize Lobby
+                    <Radio className="w-6 h-6" /> Open Lobby
                   </button>
                 )}
 
                 {quiz.status === 'lobby' && (
                   <button onClick={handleStartFirstQuestion} className="w-full h-16 bg-[#ccff00] hover:bg-white text-black font-black uppercase tracking-widest transition-colors flex items-center justify-center gap-3 animate-pulse">
-                    <Play className="w-6 h-6" /> Execute Sequence
+                    <Play className="w-6 h-6" /> Start Game
                   </button>
                 )}
 
                 {quiz.status === 'active' && !currentResults && (
                   <div className="space-y-4">
                     <div className="border border-[#333] bg-[#050505] p-4 text-center">
-                      <p className="text-[10px] font-mono text-gray-500 uppercase mb-2">Response Feed</p>
+                      <p className="text-[10px] font-mono text-gray-500 uppercase mb-2">Answers Received</p>
                       <div className="h-2 w-full bg-[#111] overflow-hidden">
                         <div
                           className="h-full bg-[#ccff00] transition-all duration-500 ease-out"
@@ -243,7 +243,7 @@ export default function QuizControl({ quizId: propQuizId }: QuizControlProps = {
                       </p>
                     </div>
                     <button onClick={handleShowResults} className="w-full h-14 bg-white hover:bg-gray-200 text-black font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
-                      <BarChart3 className="w-5 h-5" /> Reveal Analytics
+                      <BarChart3 className="w-5 h-5" /> Show Results
                     </button>
                   </div>
                 )}
@@ -252,12 +252,12 @@ export default function QuizControl({ quizId: propQuizId }: QuizControlProps = {
                   <button onClick={handleNextQuestion} className="w-full h-16 bg-[#ccff00] hover:bg-white text-black font-black uppercase tracking-widest transition-colors flex items-center justify-center gap-3">
                     {quiz.currentQuestionIndex < questions.length - 1 ? (
                       <>
-                        <span>Next Data Block</span>
+                        <span>Next Question</span>
                         <SkipForward className="w-6 h-6" />
                       </>
                     ) : (
                       <>
-                        <span>Finalize Sequence</span>
+                        <span>Finish Quiz</span>
                         <Trophy className="w-6 h-6" />
                       </>
                     )}
@@ -267,14 +267,14 @@ export default function QuizControl({ quizId: propQuizId }: QuizControlProps = {
                 {quiz.status === 'completed' && (
                   <Link href={`/admin/quiz/${quizId}/leaderboard`} className="block">
                     <button className="w-full h-16 bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-400 hover:to-amber-400 text-black font-black uppercase tracking-widest transition-all flex items-center justify-center gap-3">
-                      <Trophy className="w-6 h-6" /> Mission Debrief
+                      <Trophy className="w-6 h-6" /> View Leaderboard
                     </button>
                   </Link>
                 )}
 
                 {quiz.status !== 'completed' && quiz.status !== 'draft' && (
                   <button onClick={handleEndQuiz} className="w-full h-10 border border-red-900 text-red-700 hover:bg-red-950/30 hover:text-red-500 font-mono text-xs uppercase tracking-widest flex items-center justify-center gap-2 mt-4">
-                    <StopCircle className="w-4 h-4" /> Emergency Abort
+                    <StopCircle className="w-4 h-4" /> End Game
                   </button>
                 )}
               </div>
@@ -290,7 +290,7 @@ export default function QuizControl({ quizId: propQuizId }: QuizControlProps = {
                     <QRCode value={joinUrl} size={180} />
                   </div>
                   <div className="text-center space-y-1">
-                    <p className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Uplink Frequency Code</p>
+                    <p className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Game Code</p>
                     <p className="text-4xl font-black text-[#ccff00] tracking-widest">{quiz.code}</p>
                   </div>
                 </div>
@@ -301,14 +301,14 @@ export default function QuizControl({ quizId: propQuizId }: QuizControlProps = {
             <div className="bg-[#0a0a0a] border border-[#333] text-sm">
               <div className="p-3 border-b border-[#333] flex justify-between items-center bg-[#111]">
                 <span className="text-xs font-mono text-gray-400 uppercase flex items-center gap-2">
-                  <UserPlus className="w-3 h-3" /> Connected Agents
+                  <UserPlus className="w-3 h-3" /> Players Joined
                 </span>
                 <span className="text-[#ccff00] font-bold">{participants.length}</span>
               </div>
               <div className="max-h-60 overflow-y-auto w-full custom-scrollbar p-0">
                 {participants.length === 0 ? (
                   <div className="p-8 text-center text-gray-600 font-mono text-xs italic">
-                    ...SCANNING FOR SIGNAL...
+                    Waiting for players...
                   </div>
                 ) : (
                   <table className="w-full text-left">
@@ -338,9 +338,9 @@ export default function QuizControl({ quizId: propQuizId }: QuizControlProps = {
 
               {/* Header */}
               <div className="h-8 bg-[#111] border-b border-[#333] flex items-center justify-between px-4 relative z-10">
-                <span className="text-[10px] font-mono text-gray-400 uppercase">Tactical_View</span>
+                <span className="text-[10px] font-mono text-gray-400 uppercase">Live View</span>
                 <span className="text-[10px] font-mono text-[#ccff00]">
-                  BLOCK {quiz.currentQuestionIndex + 1}/{questions.length}
+                  Question {quiz.currentQuestionIndex + 1}/{questions.length}
                 </span>
               </div>
 
@@ -396,7 +396,7 @@ export default function QuizControl({ quizId: propQuizId }: QuizControlProps = {
                   <div className="text-center text-gray-600 space-y-4">
                     <Layers className="w-16 h-16 mx-auto opacity-20" />
                     <p className="font-mono text-sm uppercase tracking-widest">
-                      {quiz.status === 'completed' ? 'SEQUENCE COMPLETE' : 'AWAITING DATA BLOCK INJECTION...'}
+                      {quiz.status === 'completed' ? 'Quiz Complete' : 'Waiting for question...'}
                     </p>
                   </div>
                 )}

@@ -118,9 +118,9 @@ export const fetchQuestionsFromAPI = async (
 
         if (data.response_code !== 0) {
             if (data.response_code === 1) {
-                throw new Error("Not enough questions for this category/difficulty.");
+                throw new Error("We couldn't find enough questions for this topic. Try another one!");
             }
-            throw new Error(`OpenTDB API returned error code: ${data.response_code}`);
+            throw new Error(`Failed to fetch questions from the trivia database.`);
         }
 
         // 4. Transform to Question Interface

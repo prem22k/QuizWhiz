@@ -45,10 +45,10 @@ export function ShareModal({ quizId, quizCode, isOpen, onClose }: ShareModalProp
                     <DialogHeader className="mb-6">
                         <DialogTitle className="text-center font-black uppercase tracking-widest text-[#ccff00] flex items-center justify-center gap-2 text-xl font-display">
                             <Share2 className="w-5 h-5 animate-pulse" />
-                            <span>System Uplink Request</span>
+                            <span>Share Quiz</span>
                         </DialogTitle>
                         <DialogDescription className="text-center font-mono text-xs text-gray-500 uppercase tracking-wide">
-                            Broadcast signal to recruit new operatives
+                            Share this code to invite players
                         </DialogDescription>
                     </DialogHeader>
 
@@ -71,7 +71,7 @@ export function ShareModal({ quizId, quizCode, isOpen, onClose }: ShareModalProp
                             {/* Code Display */}
                             <div className="text-center relative">
                                 <div className="absolute inset-x-0 top-1/2 h-px bg-[#333] -z-10"></div>
-                                <span className="bg-[#050505] px-2 text-[10px] text-gray-500 font-mono uppercase tracking-widest">Secure Frequency ID</span>
+                                <span className="bg-[#050505] px-2 text-[10px] text-gray-500 font-mono uppercase tracking-widest">Game Code</span>
                             </div>
 
                             <div className="bg-[#111] border border-[#333] p-4 text-center relative overflow-hidden group">
@@ -94,7 +94,7 @@ export function ShareModal({ quizId, quizCode, isOpen, onClose }: ShareModalProp
 
                                 <div className="flex items-center gap-2 relative z-10">
                                     {copied ? <Check className="w-4 h-4" /> : <Terminal className="w-4 h-4" />}
-                                    <span className="font-mono text-sm">{copied ? 'UPLINK COPIED' : 'COPY TRANSMISSION LINK'}</span>
+                                    <span className="font-mono text-sm">{copied ? 'Copied!' : 'Copy Link'}</span>
                                 </div>
                             </button>
                         </div>
@@ -103,7 +103,7 @@ export function ShareModal({ quizId, quizCode, isOpen, onClose }: ShareModalProp
 
                 {/* Footer Decor */}
                 <div className="bg-[#111] py-2 px-4 flex justify-between items-center border-t border-[#222]">
-                    <span className="text-[10px] text-gray-600 font-mono uppercase">SECURE_CHANNEL_v9.0</span>
+                    <span className="text-[10px] text-gray-600 font-mono uppercase">Secure Share</span>
                     <div className="flex gap-1">
                         <div className="w-1 h-1 bg-[#ccff00] rounded-full animate-ping"></div>
                         <div className="w-1 h-1 bg-gray-600 rounded-full"></div>

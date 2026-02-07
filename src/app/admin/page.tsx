@@ -46,7 +46,7 @@ export default function AdminDashboard() {
 
   const handleDelete = async (quizId: string, e: React.MouseEvent) => {
     e.preventDefault();
-    if (!confirm('WARNING: PERMANENT DATA PURGE INITIATED. CONFIRM?')) return;
+    if (!confirm('Are you sure you want to delete this? This action cannot be undone.')) return;
 
     try {
       await deleteQuiz(quizId);
@@ -80,17 +80,17 @@ export default function AdminDashboard() {
               <Terminal className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-xl font-black uppercase tracking-tighter text-white leading-none">Command Deck</h1>
+              <h1 className="text-xl font-black uppercase tracking-tighter text-white leading-none">Admin Dashboard</h1>
               <div className="flex items-center gap-2 mt-1">
                 <div className="w-1.5 h-1.5 rounded-full bg-[#ccff00] animate-pulse"></div>
-                <span className="text-[10px] font-mono text-[#ccff00] tracking-widest uppercase">System Online</span>
+                <span className="text-[10px] font-mono text-[#ccff00] tracking-widest uppercase">Online</span>
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-4">
             <div className="hidden md:flex flex-col items-end mr-4">
-              <span className="text-[10px] text-gray-500 font-mono uppercase tracking-widest">Operator ID</span>
+              <span className="text-[10px] text-gray-500 font-mono uppercase tracking-widest">Admin User</span>
               <span className="text-xs text-white font-mono">{user?.email?.split('@')[0]}</span>
             </div>
             <Button
@@ -99,7 +99,7 @@ export default function AdminDashboard() {
               className="text-red-500 hover:text-red-400 hover:bg-red-500/10 font-mono uppercase text-xs tracking-wider gap-2"
             >
               <Power className="w-4 h-4" />
-              <span className="hidden sm:inline">End Session</span>
+              <span className="hidden sm:inline">Log Out</span>
             </Button>
           </div>
         </div>
@@ -115,7 +115,7 @@ export default function AdminDashboard() {
             </div>
             <input
               type="text"
-              placeholder="SEARCH DATABASE..."
+              placeholder="Search Quizzes..."
               className="w-full sm:w-64 bg-[#0a0a0a] border border-[#333] pl-10 pr-4 py-2 text-xs font-mono text-white focus:outline-none focus:border-[#ccff00] focus:shadow-[0_0_10px_rgba(204,255,0,0.2)] transition-all uppercase placeholder:text-gray-700"
             />
           </div>
@@ -136,18 +136,18 @@ export default function AdminDashboard() {
               <div className="absolute w-12 h-12 border-2 border-[#ccff00] rounded-full animate-spin border-t-transparent"></div>
               <Terminal className="w-6 h-6 text-[#ccff00]" />
             </div>
-            <p className="text-[#ccff00] font-mono text-xs animate-pulse uppercase tracking-[0.2em]">ACCESSING MAINFRAME...</p>
+            <p className="text-[#ccff00] font-mono text-xs animate-pulse uppercase tracking-[0.2em]">Loading...</p>
           </div>
         ) : quizzes.length === 0 ? (
           <div className="border border-dashed border-[#333] bg-[#0a0a0a] rounded-lg p-12 text-center flex flex-col items-center gap-4">
             <ShieldAlert className="w-12 h-12 text-gray-600" />
             <div className="space-y-1">
-              <h3 className="text-white font-bold uppercase tracking-wider">Database Empty</h3>
-              <p className="text-gray-500 font-mono text-xs">No active sequences found in memory.</p>
+              <h3 className="text-white font-bold uppercase tracking-wider">No Quizzes Found</h3>
+              <p className="text-gray-500 font-mono text-xs">No active quizzes found.</p>
             </div>
             <Link href="/admin/create">
               <Button variant="outline" className="border-[#ccff00] text-[#ccff00] hover:bg-[#ccff00] hover:text-black font-mono uppercase text-xs">
-                Create First Entry
+                Create First Quiz
               </Button>
             </Link>
           </div>
@@ -166,7 +166,7 @@ export default function AdminDashboard() {
                   <div className="space-y-2">
                     <div className="flex justify-between items-start">
                       <div className="bg-[#111] px-2 py-1 border border-[#333] text-[10px] font-mono text-gray-400 uppercase tracking-wider">
-                        ID: {quiz.code}
+                        Code: {quiz.code}
                       </div>
                       <div className={clsx(
                         "w-2 h-2 rounded-full",
@@ -187,7 +187,7 @@ export default function AdminDashboard() {
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <span className="text-[10px] text-gray-600 font-mono uppercase block">Status</span>
+                      <span className="text-[10px] text-gray-600 font-mono uppercase block">State</span>
                       <span className="text-xs text-gray-300 uppercase">{quiz.status}</span>
                     </div>
                   </div>

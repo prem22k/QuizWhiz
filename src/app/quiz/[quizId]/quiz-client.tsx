@@ -52,11 +52,11 @@ export default function QuizClient({ quiz }: { quiz: Quiz }) {
 
   const handleJoin = () => {
     if (participantName.trim().length < 2) {
-      toast({ title: 'ACCESS DENIED', description: 'IDENTITY STRING TOO SHORT.', variant: 'destructive' });
+      toast({ title: 'Name Required', description: 'Please enter a valid name.', variant: 'destructive' });
       return;
     }
     setGameState('waiting');
-    toast({ title: `ACCESS GRANTED`, description: `WELCOME, AGENT ${participantName.toUpperCase()}` });
+    toast({ title: `Welcome!`, description: `Get ready to play, ${participantName}!` });
     // Simulate host starting the quiz after a delay
     setTimeout(() => setGameState('active'), 3000);
   };
@@ -102,14 +102,14 @@ export default function QuizClient({ quiz }: { quiz: Quiz }) {
               <Terminal className="w-12 h-12 text-[#ccff00]" />
             </div>
 
-            <h1 className="text-2xl font-black text-center mb-2 uppercase tracking-tight">System Login</h1>
-            <p className="text-xs font-mono text-center text-gray-500 uppercase mb-8">SECURE CONNECTION TO: {quiz.title}</p>
+            <h1 className="text-2xl font-black text-center mb-2 uppercase tracking-tight">Join Game</h1>
+            <p className="text-xs font-mono text-center text-gray-500 uppercase mb-8">Joining: {quiz.title}</p>
 
             <div className="space-y-4">
               <div className="space-y-1">
-                <label className="text-[10px] font-mono text-[#ccff00] uppercase tracking-widest pl-1">Agent Identity</label>
+                <label className="text-[10px] font-mono text-[#ccff00] uppercase tracking-widest pl-1">Your Name</label>
                 <Input
-                  placeholder="ENTER_CODENAME..."
+                  placeholder="Enter your name..."
                   value={participantName}
                   onChange={(e) => setParticipantName(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleJoin()}
@@ -122,7 +122,7 @@ export default function QuizClient({ quiz }: { quiz: Quiz }) {
                 className="w-full h-12 bg-[#ccff00] hover:bg-white text-black font-black uppercase tracking-widest text-sm rounded-none transition-colors"
                 onClick={handleJoin}
               >
-                Initialize Uplink <LogIn className="ml-2 w-4 h-4" />
+                Join Game <LogIn className="ml-2 w-4 h-4" />
               </Button>
             </div>
           </div>
@@ -145,14 +145,14 @@ export default function QuizClient({ quiz }: { quiz: Quiz }) {
           </div>
 
           <div className="space-y-2">
-            <h1 className="text-3xl font-black uppercase tracking-tight animate-pulse">Standby Mode</h1>
+            <h1 className="text-3xl font-black uppercase tracking-tight animate-pulse">Waiting for Host</h1>
             <p className="text-sm font-mono text-gray-400 uppercase tracking-widest">
-              Awaiting Host Transmission...
+              The game will start soon...
             </p>
           </div>
 
           <div className="border border-[#333] bg-[#0a0a0a] px-4 py-2 inline-block">
-            <span className="text-xs font-mono text-[#ccff00]">AGENT: {participantName}</span>
+            <span className="text-xs font-mono text-[#ccff00]">Player: {participantName}</span>
           </div>
         </div>
       </div>
@@ -172,13 +172,13 @@ export default function QuizClient({ quiz }: { quiz: Quiz }) {
           <div className="absolute bottom-0 right-0 w-3 h-3 border-r-2 border-b-2 border-[#ccff00]"></div>
 
           <div>
-            <h1 className="text-3xl font-black uppercase text-white mb-2">Mission Complete</h1>
-            <p className="text-xs font-mono text-gray-500 uppercase tracking-widest">Performance Report Generated</p>
+            <h1 className="text-3xl font-black uppercase text-white mb-2">Quiz Complete</h1>
+            <p className="text-xs font-mono text-gray-500 uppercase tracking-widest">Here are your results</p>
           </div>
 
           <div className="py-8 border-y border-[#222]">
             <div className="text-6xl font-black text-[#ccff00] tabular-nums mb-2">{score}</div>
-            <div className="text-[10px] font-mono text-gray-400 uppercase">Correct Data Blocks</div>
+            <div className="text-[10px] font-mono text-gray-400 uppercase">Correct Answers</div>
             <div className="text-xs font-mono text-gray-600 mt-1">/ {quiz.questions.length} TOTAL</div>
           </div>
 
@@ -186,7 +186,7 @@ export default function QuizClient({ quiz }: { quiz: Quiz }) {
             className="w-full h-14 bg-white hover:bg-[#ccff00] text-black font-black uppercase tracking-widest transition-colors rounded-none"
             onClick={() => router.push(`/quiz/${quiz.id}/leaderboard`)}
           >
-            Access Global Rankings <ChevronsRight className="ml-2 w-5 h-5" />
+            View Leaderboard <ChevronsRight className="ml-2 w-5 h-5" />
           </Button>
         </div>
       </div>
@@ -206,10 +206,10 @@ export default function QuizClient({ quiz }: { quiz: Quiz }) {
       <header className="fixed top-0 left-0 right-0 h-16 bg-[#050505]/90 backdrop-blur-md border-b border-[#222] z-50 flex items-center justify-between px-4">
         <div className="flex items-center gap-2">
           <Cpu className="w-5 h-5 text-[#ccff00]" />
-          <span className="font-mono text-xs uppercase text-gray-400 hidden sm:inline">Stream: {quiz.title}</span>
+          <span className="font-mono text-xs uppercase text-gray-400 hidden sm:inline">Quiz: {quiz.title}</span>
         </div>
         <div className="flex items-center gap-4 font-mono text-xs uppercase">
-          <span>Block {currentQuestionIndex + 1}/{quiz.questions.length}</span>
+          <span>Question {currentQuestionIndex + 1}/{quiz.questions.length}</span>
           <span className="text-[#ccff00] font-bold px-2 py-1 border border-[#ccff00] bg-[#ccff00]/10">Score: {score}</span>
         </div>
       </header>
@@ -284,7 +284,7 @@ export default function QuizClient({ quiz }: { quiz: Quiz }) {
           {gameState === 'active' && (
             <div className="text-center animate-pulse text-gray-500 font-mono text-xs uppercase">
               <Clock className="w-4 h-4 inline-block mr-2" />
-              {timeLeft}s Remaining to Decrypt
+              {timeLeft}s Remaining
             </div>
           )}
 
@@ -299,7 +299,7 @@ export default function QuizClient({ quiz }: { quiz: Quiz }) {
                 }
               }}
             >
-              {currentQuestionIndex < quiz.questions.length - 1 ? 'Next Block' : 'Report'} <ChevronsRight className="ml-2 w-6 h-6" />
+              {currentQuestionIndex < quiz.questions.length - 1 ? 'Next Question' : 'Results'} <ChevronsRight className="ml-2 w-6 h-6" />
             </Button>
           )}
         </div>

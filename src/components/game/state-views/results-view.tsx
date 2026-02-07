@@ -51,7 +51,7 @@ export function ResultsView({
             {/* Top Label */}
             <div className="relative z-10 w-full flex justify-center mb-8">
                 <div className="bg-[#b00b69] text-white px-4 py-1 text-sm font-mono tracking-widest uppercase transform -skew-x-12 border border-white/20 shadow-[0_0_15px_rgba(176,11,105,0.6)]">
-                    SESSION_PAUSED
+                    Results
                 </div>
             </div>
 
@@ -59,7 +59,7 @@ export function ResultsView({
 
                 {/* Correct Answer Reveal */}
                 <div className="animate-in zoom-in duration-500">
-                    <h2 className="text-[#ccff00] text-xs font-mono uppercase tracking-[0.3em] mb-4 drop-shadow-md">CORRECT_PATTERN_DETECTED</h2>
+                    <h2 className="text-[#ccff00] text-xs font-mono uppercase tracking-[0.3em] mb-4 drop-shadow-md">Correct Answer</h2>
 
                     <div className="relative group">
                         {/* Glitch Borders */}
@@ -86,9 +86,9 @@ export function ResultsView({
                     <div className="w-full bg-[#111] border border-[#333] p-4 mt-8 relative overflow-hidden">
                         <div className="flex items-center justify-between mb-4 border-b border-[#333] pb-2">
                             <h4 className="text-xs text-[#b00b69] font-mono font-bold tracking-widest flex items-center gap-2">
-                                <BarChart2 className="w-3 h-3" /> ANALYTICS_DATA
+                                <BarChart2 className="w-3 h-3" /> Key Stats
                             </h4>
-                            <span className="text-[10px] text-gray-600 font-mono">{participants.length} DATA_POINTS</span>
+                            <span className="text-[10px] text-gray-600 font-mono">{participants.length} Responses</span>
                         </div>
 
                         <ResultsChart
@@ -122,7 +122,7 @@ export function ResultsView({
 
             <div className="absolute bottom-4 w-full text-center">
                 <p className="text-[10px] text-gray-600 font-mono tracking-widest uppercase animate-pulse">
-                    {isHost ? "AWAITING_COMMAND..." : "ESTABLISHING_UPLINK..."}
+                    {isHost ? "Waiting for host..." : "Waiting for next question..."}
                 </p>
             </div>
         </div>

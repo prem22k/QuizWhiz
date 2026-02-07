@@ -22,11 +22,11 @@ export default function CreateQuiz() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user || !user.email) {
-        console.log('⛔ ACCESS DENIED: NO ACTIVE SESSION');
+        console.log('⛔ Access Denied: No Active Session');
         router.push('/login');
         return;
       }
-      console.log('✅ UPLINK ESTABLISHED:', user.email);
+      console.log('✅ Logged in as:', user.email);
       setUserEmail(user.email);
       setCheckingAuth(false);
     });
@@ -38,12 +38,12 @@ export default function CreateQuiz() {
     e.preventDefault();
 
     if (!title.trim()) {
-      alert('ERROR: SEQUENCE IDENTIFIER REQUIRED');
+      alert('Error: Title Required');
       return;
     }
 
     if (!userEmail) {
-      alert('ERROR: UPLINK INSTABILITY. RE-AUTHENTICATE.');
+      alert('Error: Please log in again.');
       router.push('/login');
       return;
     }
@@ -52,11 +52,11 @@ export default function CreateQuiz() {
 
     try {
       const quizId = await createQuiz(title, description, userEmail, auth.currentUser?.uid || "");
-      console.log('✅ SEQUENCE INITIALIZED:', quizId);
+      console.log('✅ Quiz Created:', quizId);
       router.push(`/admin/quiz/${quizId}/edit`);
     } catch (error) {
-      console.error('🔥 INITIALIZATION FAILED:', error);
-      alert('SYSTEM ERROR: SEQUENCE INITIALIZATION FAILED');
+      console.error('🔥 Creation Failed:', error);
+      alert('Error: Failed to create quiz');
     } finally {
       setLoading(false);
     }
@@ -67,7 +67,7 @@ export default function CreateQuiz() {
       <div className="flex min-h-screen items-center justify-center bg-[#050505] text-[#ccff00] font-mono">
         <div className="flex flex-col items-center gap-4 animate-pulse">
           <Cpu className="w-12 h-12" />
-          <span className="tracking-widest">ESTABLISHING SECURE UPLINK...</span>
+          <span className="tracking-widest">Verifying Access...</span>
         </div>
       </div>
     );
@@ -90,7 +90,7 @@ export default function CreateQuiz() {
           <div className="mb-8 flex flex-col gap-2">
             <Link href="/admin" className="inline-flex items-center gap-2 text-gray-500 hover:text-[#ccff00] transition-colors font-mono text-xs uppercase tracking-widest mb-4 group">
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              Return to Root
+              Back to Dashboard
             </Link>
 
             <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-white">
@@ -98,7 +98,7 @@ export default function CreateQuiz() {
             </h1>
             <div className="flex items-center gap-2 text-gray-500 font-mono text-xs">
               <span className="w-2 h-2 bg-[#ccff00] rounded-full animate-pulse"></span>
-              OPERATOR: {userEmail?.split('@')[0]}
+              Admin: {userEmail?.split('@')[0]}
             </div>
           </div>
 
@@ -124,14 +124,14 @@ export default function CreateQuiz() {
                   <div className="space-y-2 group/input">
                     <label htmlFor="title" className="flex items-center gap-2 text-xs font-mono text-[#ccff00] uppercase tracking-widest">
                       <Terminal className="w-3 h-3" />
-                      Name  (Title)
+                      Quiz Title
                     </label>
                     <div className="relative">
                       <input
                         id="title"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        placeholder="ENTER THE NAME"
+                        placeholder="Enter quiz title..."
                         className="w-full bg-[#050505] border border-[#333] p-4 text-white font-mono placeholder:text-gray-800 focus:border-[#ccff00] focus:outline-none focus:shadow-[0_0_15px_rgba(204,255,0,0.1)] transition-all uppercase"
                         required
                         disabled={loading}
@@ -151,7 +151,7 @@ export default function CreateQuiz() {
                       id="description"
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
-                      placeholder="OPTIONAL"
+                      placeholder="Optional description..."
                       rows={4}
                       className="w-full bg-[#050505] border border-[#333] p-4 text-white font-mono placeholder:text-gray-800 focus:border-[#ccff00] focus:outline-none focus:shadow-[0_0_15px_rgba(204,255,0,0.1)] transition-all uppercase resize-none"
                       disabled={loading}
@@ -187,8 +187,8 @@ export default function CreateQuiz() {
 
             {/* Decorative Footprint */}
             <div className="mt-2 flex justify-between text-[10px] font-mono text-gray-700 uppercase">
-              <span>SECURE_CHANNEL_ENCRYPTED</span>
-              <span>LATENCY: 0.04ms</span>
+              <span>Secure</span>
+              <span>PING: 14ms</span>
             </div>
           </div>
 

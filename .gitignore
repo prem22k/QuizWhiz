@@ -83,6 +83,8 @@ android/
 local.properties
 
 # Agent & Tool Configuration
+.adal/
+.agent/
 .agents/
 .augment/
 .claude/

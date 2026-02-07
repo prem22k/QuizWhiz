@@ -42,16 +42,16 @@ function JoinQuizContent() {
         const foundQuiz = await getQuizByCode(code);
         if (foundQuiz) {
           if (foundQuiz.status !== 'lobby') {
-            setError('SESSION ACTIVE/CLOSED');
+            setError('Session Ended');
             return;
           }
           setQuiz(foundQuiz);
         } else {
-          setError('INVALID TERMINAL KEY');
+          setError('Invalid Game Code');
         }
       } catch (err) {
         console.error(err);
-        setError('CONNECTION FAILURE');
+        setError('Connection Failed');
       } finally {
         setLoading(false);
       }
@@ -68,7 +68,7 @@ function JoinQuizContent() {
         router.push(`/play/${quiz.id}`);
       } catch (err) {
         console.error(err);
-        setError('AUTHORIZATION DENIED');
+        setError('Failed to Join');
       } finally {
         setLoading(false);
       }
@@ -103,7 +103,7 @@ function JoinQuizContent() {
         <div className="flex items-center gap-2">
           <div className="h-2 w-2 rounded-full bg-[#ccff00] animate-pulse"></div>
           <span className="text-[10px] tracking-[0.2em] text-[#ccff00]/80 font-mono">
-            {quiz ? 'UPLINK_ESTABLISHED' : 'SECURE_LINK_WAITING'}
+            {quiz ? 'Game Found' : 'Enter Code'}
           </span>
         </div>
         <Wifi className="text-[#ccff00]/60 w-5 h-5" />
@@ -124,7 +124,7 @@ function JoinQuizContent() {
         {/* Floating Side Label (Game Code) */}
         <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 opacity-20 pointer-events-none select-none hidden md:block">
           <h1 className="text-[120px] leading-none font-bold text-vertical font-mono tracking-tighter text-white whitespace-nowrap" style={{ writingMode: 'vertical-rl' }}>
-            {quiz ? 'IDENTITY' : 'GAME CODE'}
+            {quiz ? 'NAME' : 'GAME CODE'}
           </h1>
         </div>
 
@@ -134,14 +134,14 @@ function JoinQuizContent() {
           {/* Terminal Prompt Text */}
           <div className="text-left space-y-2">
             <p className="text-[#ccff00] text-sm font-mono tracking-widest uppercase mb-1">
-                        // {quiz ? 'IDENTIFICATION_REQUIRED' : 'AUTHORIZATION_REQUIRED'}
+                        // {quiz ? 'ENTER NAME' : 'ENTER CODE'}
             </p>
             <h2 className="text-white text-3xl md:text-5xl font-bold leading-tight uppercase tracking-tight font-display">
-              {quiz ? 'Identify Agent' : 'Enter Key'}
+              {quiz ? 'Enter Name' : 'Enter Code'}
             </h2>
             {quiz && (
               <div className="inline-block px-2 py-1 bg-[#1a1a1a] border border-[#ccff00]/30 text-[#ccff00] text-xs font-mono">
-                TARGET: {quiz.title}
+                Playing: {quiz.title}
               </div>
             )}
           </div>
@@ -165,7 +165,7 @@ function JoinQuizContent() {
                 inputMode={quiz ? "text" : "numeric"}
                 pattern={quiz ? undefined : "[0-9]*"}
                 maxLength={quiz ? 15 : 6}
-                placeholder={quiz ? "AGENT NAME" : "00 00 00"}
+                placeholder={quiz ? "Your Name" : "00 00 00"}
                 value={quiz ? name : code}
                 onChange={quiz ? handleNameChange : handleCodeChange}
                 onKeyDown={(e) => e.key === 'Enter' && handleAction()}
@@ -183,11 +183,11 @@ function JoinQuizContent() {
               ) : (
                 <>
                   <span className="text-xs text-white/40 font-mono">
-                    {quiz ? 'MAX_LENGTH: 15' : 'ENCRYPTION: AES-256'}
+                    {quiz ? 'Max Length: 15' : 'SECURE ENTRY'}
                   </span>
                   <div className="flex items-center gap-1 text-xs text-electric-purple">
                     <Lock className="w-3 h-3" />
-                    <span className="font-mono">LOCKED</span>
+                    <span className="font-mono">SECURE</span>
                   </div>
                 </>
               )}
@@ -202,7 +202,7 @@ function JoinQuizContent() {
             className="w-full bg-[#ccff00] hover:bg-[#bbee00] disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] transition-all duration-200 h-16 flex items-center justify-center rounded-none shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] group"
           >
             <span className="text-black text-xl font-bold tracking-[0.1em] group-hover:tracking-[0.15em] transition-all font-display uppercase">
-              {loading ? 'PROCESSING...' : (quiz ? 'INITIATE_LINK' : 'JOIN SESSION')}
+              {loading ? 'Joining...' : (quiz ? 'Join Game' : 'Find Game')}
             </span>
             {!loading && <ArrowRight className="ml-2 text-black font-bold group-hover:translate-x-1 transition-transform w-6 h-6" />}
           </button>
@@ -213,7 +213,7 @@ function JoinQuizContent() {
               onClick={() => { setQuiz(null); setCode(''); setError(''); }}
               className="w-full text-white/40 hover:text-white text-xs font-mono tracking-widest text-center uppercase mt-4 transition-colors"
             >
-              [ ABORT SEQUENCE ]
+              Cancel
             </button>
           )}
 
@@ -227,7 +227,7 @@ function JoinQuizContent() {
 
 export default function JoinQuiz() {
   return (
-    <Suspense fallback={<div className="h-screen w-full bg-[#050505] flex items-center justify-center text-[#ccff00] font-mono">INITIALIZING...</div>}>
+    <Suspense fallback={<div className="h-screen w-full bg-[#050505] flex items-center justify-center text-[#ccff00] font-mono">Loading...</div>}>
       <JoinQuizContent />
     </Suspense>
   );

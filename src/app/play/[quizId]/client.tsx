@@ -255,7 +255,7 @@ export default function PlayPage({ quizId: propQuizId }: PlayPageProps = {}) {
     }
   };
 
-  if (!quiz) return <div className="h-screen w-full bg-[#050505] flex items-center justify-center text-[#ccff00] font-mono">LOADING GAME_HUD...</div>;
+  if (!quiz) return <div className="h-screen w-full bg-[#050505] flex items-center justify-center text-[#ccff00] font-mono">LOADING GAME...</div>;
 
   const joinUrl = typeof window !== 'undefined' ? `${window.location.origin}/join?code=${quiz.code}` : '';
 
@@ -319,7 +319,7 @@ export default function PlayPage({ quizId: propQuizId }: PlayPageProps = {}) {
             <div className="flex items-center gap-3">
               <div className="bg-[#ccff00] text-black px-2 py-0.5 text-xs font-black rounded-sm">HOST</div>
               <span className="text-xs font-mono text-gray-400 hidden md:inline">
-                {participants.length} AGENTS // STATUS: {quiz.status.toUpperCase()}
+                {participants.length} Players • {quiz.status === 'active' ? 'Live' : quiz.status}
               </span>
             </div>
 
@@ -335,7 +335,7 @@ export default function PlayPage({ quizId: propQuizId }: PlayPageProps = {}) {
 
               {viewState === 'lobby' && (
                 <Button onClick={hostStartGame} disabled={isProcessing} className="bg-[#ccff00] hover:bg-[#bbee00] text-black font-bold uppercase rounded-none w-full md:w-auto h-10 px-6">
-                  <Play className="mr-2 h-4 w-4" /> {isProcessing ? "INITIATING..." : "START SECTOR"}
+                  <Play className="mr-2 h-4 w-4" /> {isProcessing ? "STARTING..." : "START GAME"}
                 </Button>
               )}
 
@@ -348,7 +348,7 @@ export default function PlayPage({ quizId: propQuizId }: PlayPageProps = {}) {
 
               {viewState === 'results' && (
                 <Button onClick={hostNextQuestion} disabled={isProcessing} className="bg-[#ccff00] hover:bg-[#bbee00] text-black font-bold uppercase rounded-none w-full md:w-auto h-10 px-6">
-                  {isProcessing ? "LOADING..." : "NEXT SECTOR"} <SkipForward className="ml-2 h-4 w-4" />
+                  {isProcessing ? "LOADING..." : "NEXT QUESTION"} <SkipForward className="ml-2 h-4 w-4" />
                 </Button>
               )}
             </div>

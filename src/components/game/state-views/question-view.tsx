@@ -56,16 +56,16 @@ export function QuestionView({
             {/* Debug Data Header */}
             <div className="flex justify-between items-start pt-4 px-6 pb-2 z-10 font-mono text-xs tracking-widest text-white/50 uppercase">
                 <div className="flex flex-col gap-1">
-                    <span className="text-[10px] text-[#ccff00]/60">SYSTEM.Q_INDEX_{questionIndex + 1}</span>
+                    <span className="text-[10px] text-[#ccff00]/60">Question {questionIndex + 1}</span>
                     <span className="flex items-center gap-2">
                         <Activity className="w-3 h-3 text-[#ccff00]" />
-                        STREAK: {streak}
+                        Streak: {streak}
                     </span>
                 </div>
                 <div className="flex flex-col gap-1 text-right">
-                    <span className="text-[10px] text-[#ccff00]/60">NET.UPLINK_STABLE</span>
+                    <span className="text-[10px] text-[#ccff00]/60">Online</span>
                     <span className="flex items-center gap-2 justify-end">
-                        AGENTS: {totalParticipants}
+                        Players: {totalParticipants}
                         <Users className="w-3 h-3 text-[#ccff00]" />
                     </span>
                 </div>
@@ -95,7 +95,7 @@ export function QuestionView({
 
                         <div className="mt-4 flex items-center gap-2 text-[#ccff00]/60 text-xs font-mono tracking-widest uppercase">
                             <AlertOctagon className="w-3 h-3 animate-pulse" />
-                            <span>INPUT_REQUIRED</span>
+                            <span>Answer Now</span>
                         </div>
                     </div>
                 </div>
@@ -146,7 +146,7 @@ export function QuestionView({
                 <div className="flex justify-between items-end opacity-30 px-4">
                     <div className="h-8 w-8 border-l border-b border-white"></div>
                     <div className="text-[10px] font-mono tracking-[0.5em] text-white/50 animate-pulse">
-                        AWAITING_INPUT_STREAM
+                        Waiting for answer...
                     </div>
                     <div className="h-8 w-8 border-r border-b border-white"></div>
                 </div>

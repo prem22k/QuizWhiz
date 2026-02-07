@@ -45,12 +45,12 @@ export default function AdminLeaderboard({ quizId: propQuizId }: AdminLeaderboar
     <div className="flex min-h-screen items-center justify-center bg-[#050505] text-[#ccff00] font-mono">
       <div className="flex flex-col items-center gap-4 animate-pulse">
         <Cpu className="w-12 h-12" />
-        <span className="tracking-widest">CALCULATING PERFORMANCE METRICS...</span>
+        <span className="tracking-widest">Loading Leaderboard...</span>
       </div>
     </div>
   );
 
-  if (!quiz) return <div className="p-8 bg-[#050505] text-red-500 font-mono">ERROR: SEQUENCE NOT FOUND</div>;
+  if (!quiz) return <div className="p-8 bg-[#050505] text-red-500 font-mono">Error: Quiz Not Found</div>;
 
   const getRankStyle = (rank: number) => {
     switch (rank) {
@@ -100,7 +100,7 @@ export default function AdminLeaderboard({ quizId: propQuizId }: AdminLeaderboar
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 text-[#ccff00]">
             <Terminal className="w-5 h-5" />
-            <span className="font-mono text-sm tracking-widest uppercase">Mission Debrief</span>
+            <span className="font-mono text-sm tracking-widest uppercase">Leaderboard</span>
           </div>
 
           <Button
@@ -110,7 +110,7 @@ export default function AdminLeaderboard({ quizId: propQuizId }: AdminLeaderboar
           >
             <Link href="/admin">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Archive
+              Back
             </Link>
           </Button>
         </div>
@@ -121,8 +121,8 @@ export default function AdminLeaderboard({ quizId: propQuizId }: AdminLeaderboar
         <div className="text-center space-y-4 mb-12">
           <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-white">{quiz.title}</h1>
           <div className="inline-flex items-center gap-4 text-xs font-mono text-gray-500 uppercase border border-[#333] px-4 py-2 bg-[#0a0a0a]">
-            <span>Total Operatives: {leaderboard.length}</span>
-            <span className="text-[#ccff00]">Status: COMPLETE</span>
+            <span>Total Players: {leaderboard.length}</span>
+            <span className="text-[#ccff00]">Status: Complete</span>
           </div>
         </div>
 
@@ -156,7 +156,7 @@ export default function AdminLeaderboard({ quizId: propQuizId }: AdminLeaderboar
 
                   <div className="text-right">
                     <div className="text-4xl font-black text-white tabular-nums tracking-tighter">{entry.totalScore.toLocaleString()}</div>
-                    <div className="text-[10px] font-mono text-[#ccff00] uppercase tracking-widest">Score Value</div>
+                    <div className="text-[10px] font-mono text-[#ccff00] uppercase tracking-widest">Score</div>
                   </div>
 
                   {/* Hover Effect */}
@@ -170,7 +170,7 @@ export default function AdminLeaderboard({ quizId: propQuizId }: AdminLeaderboar
         <div className="mt-12 flex justify-center gap-4">
           <Link href={`/admin/quiz/${quizId}/control`}>
             <button className="px-8 py-4 border border-[#333] hover:border-[#ccff00] hover:text-[#ccff00] text-gray-400 font-mono text-xs uppercase tracking-widest transition-colors flex items-center gap-2">
-              <Terminal className="w-4 h-4" /> Return to Command
+              <Terminal className="w-4 h-4" /> Back to Dashboard
             </button>
           </Link>
         </div>

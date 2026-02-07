@@ -56,7 +56,7 @@ export default function MobileNav() {
                         "text-[10px] font-bold tracking-widest uppercase transition-colors",
                         pathname.startsWith('/settings') ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
                     )}>
-                        Config
+                        Settings
                     </span>
                 </Link>
 

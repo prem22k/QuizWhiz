@@ -36,7 +36,7 @@ export function Podium({ participants, isHost, onRestart }: PodiumProps) {
                 {/* Header Badge */}
                 <div className="flex justify-center pt-8 pb-4">
                     <div className="bg-[#b00b69] text-white px-4 py-1 text-sm font-mono tracking-widest uppercase transform -skew-x-12 border border-white/20 shadow-[0_0_15px_rgba(176,11,105,0.6)]">
-                        SESSION_TERMINATED
+                        Game Over
                     </div>
                 </div>
 
@@ -167,7 +167,7 @@ export function Podium({ participants, isHost, onRestart }: PodiumProps) {
                                 <div className="absolute bottom-0 left-0 w-0 h-0 border-b-[10px] border-l-[10px] border-b-black border-l-transparent"></div>
 
                                 <span className="relative z-10 text-black text-lg font-black tracking-widest uppercase flex items-center gap-2 font-archivo">
-                                    PLAY AGAIN / REBOOT
+                                    Play Again
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-rotate-ccw"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 12" /><path d="M3 3v9h9" /></svg>
                                 </span>
 
@@ -182,7 +182,7 @@ export function Podium({ participants, isHost, onRestart }: PodiumProps) {
                             <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#111] border border-[#333]">
                                 <span className="w-2 h-2 bg-[#ccff00] rounded-full animate-pulse"></span>
                                 <p className="text-white/40 font-mono text-xs uppercase tracking-widest">
-                                    SERVER_STANDBY_MODE
+                                    Waiting for host...
                                 </p>
                             </div>
                         </div>

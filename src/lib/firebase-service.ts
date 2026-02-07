@@ -137,7 +137,7 @@ export const createAIQuickQuiz = async (topic: string): Promise<string> => {
     });
 
     if (!response.ok) {
-      throw new Error(`AI Generation failed: ${response.statusText}`);
+      throw new Error(`Failed to generate quiz. Please try again.`);
     }
 
     const data = await response.json();

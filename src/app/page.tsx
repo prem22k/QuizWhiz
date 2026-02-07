@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
-import { Zap, Users, Brain, ArrowRight, Trophy, Gamepad2 } from 'lucide-react';
+import { Zap, Users, Brain, ArrowRight, Trophy, Gamepad2, Pencil, Share2, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ConstellationBackground } from '@/components/ui/constellation-background';
 import { BentoFeatures } from '@/components/ui/bento-features';
@@ -30,9 +30,9 @@ const features = [
 ];
 
 const steps = [
-  { num: '01', title: 'Create', desc: 'Pick a topic or let AI generate one' },
-  { num: '02', title: 'Share', desc: 'Invite players with a simple code' },
-  { num: '03', title: 'Play', desc: 'Answer fast to climb the leaderboard' }
+  { num: '01', title: 'Create', desc: 'Pick a topic or let AI generate one', icon: Pencil },
+  { num: '02', title: 'Share', desc: 'Invite players with a simple code', icon: Share2 },
+  { num: '03', title: 'Play', desc: 'Answer fast to climb the leaderboard', icon: Play }
 ];
 
 const categories = ['General Knowledge', 'Movies', 'Sports', 'Geography', 'Video Games', 'History', 'Science'];
@@ -124,7 +124,7 @@ export default function LandingPage() {
           {/* Badge */}
           <motion.div variants={itemVariants} className="inline-flex items-center gap-2 bg-white/5 border border-white/10 px-5 py-2.5 mb-10 rounded-full backdrop-blur-md shadow-[0_0_20px_rgba(var(--primary),0.15)] hover:shadow-[0_0_25px_rgba(var(--primary),0.25)] transition-all duration-300">
             <Zap className="w-4 h-4 text-primary animate-pulse" />
-            <span className="text-xs font-mono uppercase tracking-[0.2em] text-primary font-bold">Real-Time Quiz Platform</span>
+            <span className="text-xs uppercase tracking-[0.2em] text-primary font-bold">Real-Time Quiz Platform</span>
           </motion.div>
 
           {/* Main headline - Optimized for LCP (No entrance animation) */}
@@ -162,16 +162,7 @@ export default function LandingPage() {
           </motion.div>
         </motion.div>
 
-        {/* Scroll indicator */}
-        <motion.div
-          style={{ opacity }}
-          className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3"
-          animate={{ y: [0, 10, 0] }}
-          transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-        >
-          <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground/60">Scroll</span>
-          <div className="w-px h-12 bg-gradient-to-b from-primary to-transparent" />
-        </motion.div>
+       
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════════
@@ -201,7 +192,12 @@ export default function LandingPage() {
 
           <div className="relative grid md:grid-cols-3 gap-12">
             {/* Circuit Line - Desktop */}
-            <div className="hidden md:block absolute top-[60px] left-[16%] right-[16%] h-[2px] bg-white/5">
+            <div className="hidden md:block absolute top-[40px] left-[16%] right-[16%] h-[2px] bg-white/5">
+              {/* Start Dot */}
+              <div className="absolute top-1/2 left-0 -translate-y-1/2 w-2 h-2 rounded-full bg-border" />
+              {/* End Dot */}
+              <div className="absolute top-1/2 right-0 -translate-y-1/2 w-2 h-2 rounded-full bg-border" />
+              {/* Shimmer */}
               <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-primary to-transparent opacity-50 animate-shimmer-slide" />
             </div>
 
@@ -214,12 +210,16 @@ export default function LandingPage() {
                 viewport={{ once: true }}
                 className="relative flex flex-col items-center text-center group"
               >
-                <div className="w-12 h-12 rounded-full border border-primary/30 bg-background flex items-center justify-center relative z-10 mb-8 group-hover:border-primary group-hover:shadow-[0_0_20px_rgba(var(--primary),0.3)] transition-all duration-300">
-                  <div className="w-3 h-3 rounded-full bg-primary" />
+                <div className="w-20 h-20 rounded-full border border-primary/30 bg-background/80 backdrop-blur-sm flex items-center justify-center relative z-10 mb-8 group-hover:border-primary group-hover:shadow-[0_0_20px_rgba(var(--primary),0.3)] transition-all duration-300">
+                  <step.icon className="w-8 h-8 text-primary group-hover:scale-110 transition-transform duration-300" />
                 </div>
                 <h3 className="text-3xl font-bold uppercase tracking-wide mb-4 relative z-10">{step.title}</h3>
-                <p className="text-muted-foreground relative z-10 text-lg max-w-xs">{step.desc}</p>
-                <span className="absolute -top-10 text-[120px] font-black text-white/[0.02] select-none pointer-events-none">{step.num}</span>
+                <p className="text-muted-foreground relative z-10 text-lg max-w-xs leading-relaxed">{step.desc}</p>
+
+                {/* Background Number - Adjusted layout */}
+                <span className="absolute -top-16 left-1/2 -translate-x-1/2 text-[140px] font-black text-white/[0.03] select-none pointer-events-none leading-none z-0">
+                  {step.num}
+                </span>
               </motion.div>
             ))}
           </div>
@@ -279,11 +279,12 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="py-12 px-6 border-t border-white/5 bg-black">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            <span className="text-xs text-muted-foreground font-mono uppercase tracking-widest">Systems Online</span>
+          <span className="text-sm font-medium text-muted-foreground">© 2025 QuizWhiz. All rights reserved.</span>
+          <div className="flex items-center gap-6">
+            <Link href="#" className="text-sm text-muted-foreground hover:text-white transition-colors">Privacy</Link>
+            <Link href="#" className="text-sm text-muted-foreground hover:text-white transition-colors">Terms</Link>
+            <Link href="#" className="text-sm text-muted-foreground hover:text-white transition-colors">Contact</Link>
           </div>
-          <span className="text-[10px] text-white/20 font-mono uppercase tracking-[0.5em]">QuizWhiz © 2025</span>
         </div>
       </footer>
 

@@ -33,8 +33,8 @@ export default function QuizLobby({ quizId: propQuizId }: QuizLobbyProps = {}) {
 
   const handleStartQuiz = () => {
     toast({
-      title: "SEQUENCE INITIATED",
-      description: "BROADCASTING DATA STREAM..."
+      title: "Quiz Started",
+      description: "Get ready..."
     });
   };
 
@@ -43,7 +43,7 @@ export default function QuizLobby({ quizId: propQuizId }: QuizLobbyProps = {}) {
       <div className="flex items-center justify-center h-screen bg-[#050505] text-[#ccff00]">
         <div className="flex flex-col items-center gap-4 animate-pulse">
           <Radio className="w-12 h-12" />
-          <span className="font-mono tracking-widest">SEARCHING FREQUENCY...</span>
+          <span className="font-mono tracking-widest">Loading...</span>
         </div>
       </div>
     );
@@ -64,10 +64,10 @@ export default function QuizLobby({ quizId: propQuizId }: QuizLobbyProps = {}) {
         <div className="text-center mb-12 space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 border border-[#333] bg-[#0a0a0a] rounded-full">
             <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-            <span className="text-[10px] font-mono text-gray-400 uppercase tracking-widest">System Online</span>
+            <span className="text-[10px] font-mono text-gray-400 uppercase tracking-widest">Online</span>
           </div>
           <h1 className="font-black text-4xl md:text-7xl uppercase tracking-tighter text-white">{quiz.title}</h1>
-          <p className="text-[#ccff00] font-mono text-sm md:text-lg uppercase tracking-widest">Public Uplink Active</p>
+          <p className="text-[#ccff00] font-mono text-sm md:text-lg uppercase tracking-widest">Join now</p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto w-full items-center">
@@ -91,7 +91,7 @@ export default function QuizLobby({ quizId: propQuizId }: QuizLobbyProps = {}) {
               </div>
             </div>
             <p className="mt-8 font-mono text-gray-500 uppercase tracking-widest text-xs flex items-center gap-2">
-              <Wifi className="w-4 h-4 animate-pulse" /> Scan for Secure Connection
+              <Wifi className="w-4 h-4 animate-pulse" /> Scan to Join
             </p>
           </div>
 
@@ -105,7 +105,7 @@ export default function QuizLobby({ quizId: propQuizId }: QuizLobbyProps = {}) {
 
               <h2 className="text-xl font-bold uppercase tracking-widest mb-6 flex items-center gap-2">
                 <div className="w-2 h-6 bg-[#ccff00]"></div>
-                Connected Agents ({mockParticipants.length})
+                Connected Players ({mockParticipants.length})
               </h2>
 
               <div className="flex-1 flex flex-wrap content-start gap-3 relative z-10">
@@ -116,7 +116,7 @@ export default function QuizLobby({ quizId: propQuizId }: QuizLobbyProps = {}) {
                   </div>
                 ))}
                 <div className="bg-[#111]/50 border border-dashed border-[#333] text-gray-600 px-4 py-2 font-mono text-sm uppercase animate-pulse">
-                  Scanning...
+                  Waiting...
                 </div>
               </div>
             </div>
@@ -126,7 +126,7 @@ export default function QuizLobby({ quizId: propQuizId }: QuizLobbyProps = {}) {
               className="w-full h-20 text-xl bg-[#ccff00] hover:bg-white text-black font-black uppercase tracking-widest transition-all rounded-none hover:translate-y-[-4px] hover:shadow-[0_10px_20px_rgba(204,255,0,0.2)]"
               onClick={handleStartQuiz}
             >
-              <PlayCircle className="h-8 w-8 mr-4" /> Initialize Sequence
+              <PlayCircle className="h-8 w-8 mr-4" /> Start Quiz
             </Button>
 
           </div>

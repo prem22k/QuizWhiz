@@ -131,7 +131,7 @@ export default function HostQuizControl({ quizId: propQuizId }: HostQuizControlP
                     {/* Host Context Banner */}
                     <div className="bg-indigo-600 text-white px-4 py-2 rounded-t-lg flex justify-between items-center mb-0">
                         <span className="text-sm font-medium flex items-center gap-2">
-                            <Trophy className="h-4 w-4" /> Quick Play Host Mode
+                            <Trophy className="h-4 w-4" /> Host Mode
                         </span>
                         <Link href="/" className="text-xs hover:text-indigo-200 flex items-center gap-1">
                             <Home className="h-3 w-3" /> Back to Home
@@ -157,7 +157,7 @@ export default function HostQuizControl({ quizId: propQuizId }: HostQuizControlP
                             {(quiz.status === 'draft' || quiz.status === 'lobby') && (
                                 <Card className="border-indigo-100 shadow-md">
                                     <CardHeader>
-                                        <CardTitle className="text-indigo-900">Invite Friends</CardTitle>
+                                        <CardTitle className="text-indigo-900">Invite Players</CardTitle>
                                     </CardHeader>
                                     <CardContent className="space-y-4">
                                         <div className="bg-white p-4 rounded-lg border flex justify-center">
@@ -178,13 +178,13 @@ export default function HostQuizControl({ quizId: propQuizId }: HostQuizControlP
                             {/* Control Buttons */}
                             <Card className="border-indigo-100 shadow-md">
                                 <CardHeader>
-                                    <CardTitle>Game Controls</CardTitle>
+                                    <CardTitle>Controls</CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     {quiz.status === 'draft' && (
                                         <Button onClick={handleStartLobby} className="w-full bg-indigo-600 hover:bg-indigo-700" size="lg">
                                             <Play className="mr-2 h-5 w-5" />
-                                            Open Lobby & Waiting Room
+                                            Open Lobby
                                         </Button>
                                     )}
 
@@ -198,7 +198,7 @@ export default function HostQuizControl({ quizId: propQuizId }: HostQuizControlP
                                             </div>
                                             <Button onClick={handleStartFirstQuestion} className="w-full bg-green-600 hover:bg-green-700" size="lg">
                                                 <Play className="mr-2 h-5 w-5" />
-                                                Start The Game!
+                                                Start Game
                                             </Button>
                                         </div>
                                     )}
@@ -218,7 +218,7 @@ export default function HostQuizControl({ quizId: propQuizId }: HostQuizControlP
                                                 </div>
                                             </div>
                                             <Button onClick={handleShowResults} className="w-full" size="lg">
-                                                Stop & Show Results
+                                                Show Results
                                             </Button>
                                         </div>
                                     )}
@@ -245,7 +245,7 @@ export default function HostQuizControl({ quizId: propQuizId }: HostQuizControlP
 
                                     {quiz.status !== 'completed' && quiz.status !== 'draft' && (
                                         <Button onClick={handleEndQuiz} variant="ghost" className="w-full text-red-500 hover:text-red-600 hover:bg-red-50 mt-4">
-                                            Abort Game
+                                            End Game
                                         </Button>
                                     )}
                                 </CardContent>
@@ -254,7 +254,7 @@ export default function HostQuizControl({ quizId: propQuizId }: HostQuizControlP
                             {/* Participants List */}
                             <Card>
                                 <CardHeader>
-                                    <CardTitle className="text-sm uppercase tracking-wide text-muted-foreground">Scoreboard</CardTitle>
+                                    <CardTitle className="text-sm uppercase tracking-wide text-muted-foreground">Leaderboard</CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="space-y-2 max-h-64 overflow-y-auto pr-2">

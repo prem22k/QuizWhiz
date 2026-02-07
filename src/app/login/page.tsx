@@ -49,12 +49,12 @@ export default function LoginPage() {
 
   const mapFirebaseError = (error: any) => {
     switch (error.code) {
-      case 'auth/invalid-credential': setError('INVALID_CREDENTIALS'); break;
-      case 'auth/user-not-found': setError('USER_NOT_FOUND_IN_DATABASE'); break;
-      case 'auth/wrong-password': setError('INCORRECT_ACCESS_KEY'); break;
-      case 'auth/email-already-in-use': setError('IDENTITY_ALREADY_REGISTERED'); break;
-      case 'auth/weak-password': setError('PASSWORD_SECURITY_LEVEL_LOW'); break;
-      default: setError(error.message || 'AUTHENTICATION_FAILED');
+      case 'auth/invalid-credential': setError('Invalid credentials'); break;
+      case 'auth/user-not-found': setError('User not found'); break;
+      case 'auth/wrong-password': setError('Incorrect password'); break;
+      case 'auth/email-already-in-use': setError('Email already registered'); break;
+      case 'auth/weak-password': setError('Password too weak'); break;
+      default: setError(error.message || 'Authentication failed');
     }
   };
 
@@ -78,7 +78,7 @@ export default function LoginPage() {
       }
     } catch (error: any) {
       console.error('❌ Google Login failed:', error);
-      setError('BIOMETRIC_AUTH_FAILED');
+      setError('Login failed');
       setLoading(false);
     }
   };
@@ -88,7 +88,7 @@ export default function LoginPage() {
     setError('');
     setLoading(true);
     if (!email || !password) {
-      setError('MISSING_FIELDS');
+      setError('Missing fields');
       setLoading(false);
       return;
     }
@@ -99,10 +99,10 @@ export default function LoginPage() {
       if (output.success) {
         setOtpSent(true);
       } else {
-        setError('UPLINK_FAILED');
+        setError('Failed to send code');
       }
     } catch (err) {
-      setError('SYSTEM_ERROR');
+      setError('Something went wrong');
     } finally {
       setLoading(false);
     }
@@ -114,7 +114,7 @@ export default function LoginPage() {
     setLoading(true);
 
     if (enteredOtp !== generatedOtp) {
-      setError('INVALID_OTP');
+      setError('Invalid OTP');
       setLoading(false);
       return;
     }
@@ -178,14 +178,14 @@ export default function LoginPage() {
         <div className="relative z-10 flex flex-col items-center gap-6 opacity-60">
           <ShieldCheck className="w-32 h-32 text-[#ccff00] animate-pulse" />
           <div className="text-center space-y-2">
-            <h2 className="text-2xl font-mono text-[#ccff00] tracking-[0.3em] uppercase">Restricted Area</h2>
-            <p className="text-xs font-mono text-gray-500">AUTHORIZED PERSONNEL ONLY</p>
+            <h2 className="text-2xl font-mono text-[#ccff00] tracking-[0.3em] uppercase">QuizWhiz</h2>
+            <p className="text-xs font-mono text-gray-500">Host Dashboard</p>
           </div>
           <div className="font-mono text-[10px] text-gray-700 mt-12 whitespace-pre">
-            {`> ESTABLISHING SECURE CONNECTION...
-> ENCRYPTING DATA STREAMS...
-> VERIFYING IDENTITY TOKEN...
-> ACCESS: PENDING`}
+            {`> Create Quizzes
+> Host Live Games
+> Track Performance
+> Real-time Results`}
           </div>
         </div>
       </div>
@@ -193,23 +193,27 @@ export default function LoginPage() {
       {/* Right Side - Form */}
       <div className="flex-1 flex flex-col relative z-10 h-screen overflow-y-auto">
 
+        {/* Absolute Logo */}
+        <div className="absolute top-6 left-6 z-50">
+          <Link href="/" className="inline-flex items-center gap-2 group">
+            <Icons.logo className="w-8 h-8 md:w-10 md:h-10 text-white group-hover:rotate-6 transition-transform" />
+          </Link>
+        </div>
+
         <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-12 w-full max-w-lg mx-auto">
 
           {/* Header */}
           <div className="w-full text-center space-y-6 mb-12">
-            <Link href="/" className="inline-flex items-center gap-2 group">
-              <Icons.logo className="w-12 h-12 group-hover:rotate-6 transition-transform" />
-            </Link>
 
             <div className="relative inline-block">
               <span className="absolute -inset-1 bg-[#ccff00]/20 skew-x-12 blur-sm"></span>
               <h1 className="relative text-3xl md:text-4xl font-black uppercase tracking-tighter text-white">
-                {isSignUp ? 'Initialize Access' : 'System Login'}
+                {isSignUp ? 'Create Account' : 'Welcome Back'}
               </h1>
             </div>
 
             <p className="text-gray-500 font-mono text-xs uppercase tracking-widest">
-              {isSignUp ? (otpSent ? `> AWAITING OTP FOR: ${email}` : '> CREATE NEW IDENTITY') : '> ENTER CREDENTIALS'}
+              {isSignUp ? (otpSent ? `> Enter code sent to: ${email}` : '> Create a new account') : '> Sign in to your account'}
             </p>
           </div>
 
@@ -227,13 +231,13 @@ export default function LoginPage() {
               <div className="space-y-4">
 
                 <div className="space-y-1 group">
-                  <label className="text-[10px] font-mono text-gray-500 uppercase tracking-widest group-focus-within:text-[#ccff00] transition-colors">Identity (Email)</label>
+                  <label className="text-[10px] font-mono text-gray-500 uppercase tracking-widest group-focus-within:text-[#ccff00] transition-colors">Email Address</label>
                   <div className="relative">
                     <input
                       type="email"
                       required
                       className="w-full bg-[#0a0a0a] border border-[#333] p-4 text-white font-mono placeholder:text-gray-800 focus:border-[#ccff00] focus:outline-none focus:shadow-[0_0_15px_rgba(204,255,0,0.2)] transition-all"
-                      placeholder="agent@quizwhiz.com"
+                      placeholder="hello@example.com"
                       value={email}
                       onChange={e => setEmail(e.target.value)}
                     />
@@ -242,7 +246,7 @@ export default function LoginPage() {
                 </div>
 
                 <div className="space-y-1 group">
-                  <label className="text-[10px] font-mono text-gray-500 uppercase tracking-widest group-focus-within:text-[#ccff00] transition-colors">Access Key (Password)</label>
+                  <label className="text-[10px] font-mono text-gray-500 uppercase tracking-widest group-focus-within:text-[#ccff00] transition-colors">Password</label>
                   <div className="relative">
                     <input
                       type={showPassword ? "text" : "password"}
@@ -262,7 +266,7 @@ export default function LoginPage() {
             ) : (
               <div className="space-y-4 animate-in slide-in-from-right">
                 <div className="space-y-1 group">
-                  <label className="text-[10px] font-mono text-[#ccff00] uppercase tracking-widest animate-pulse">Enter One-Time-Password</label>
+                  <label className="text-[10px] font-mono text-[#ccff00] uppercase tracking-widest animate-pulse">Enter One-Time Password</label>
                   <input
                     type="text"
                     maxLength={6}
@@ -274,7 +278,7 @@ export default function LoginPage() {
                   />
                 </div>
                 <button type="button" onClick={() => setOtpSent(false)} className="text-xs font-mono text-gray-500 hover:text-[#ccff00] underline decoration-dashed underline-offset-4">
-                  {`< RE-CONFIGURE IDENTITY`}
+                  {`< Back to Email`}
                 </button>
               </div>
             )}
@@ -289,7 +293,7 @@ export default function LoginPage() {
                 <div className="absolute bottom-0 left-0 w-4 h-4 bg-black transform rotate-45 -translate-x-2 translate-y-2"></div>
 
                 <span className="text-black font-black uppercase tracking-widest group-hover:tracking-[0.3em] transition-all flex items-center gap-2">
-                  {loading ? 'PROCESSING...' : (isSignUp ? (otpSent ? 'VERIFY & EXECUTE' : 'SEND VERIFICATION CODE') : 'INITIATE LOGIN')}
+                  {loading ? 'Processing...' : (isSignUp ? (otpSent ? 'Verify & Register' : 'Send Verification Code') : 'Login')}
                   {!loading && <Terminal className="w-4 h-4" />}
                 </span>
               </button>
@@ -298,7 +302,7 @@ export default function LoginPage() {
                 <>
                   <div className="relative flex items-center justify-center my-6">
                     <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-[#222]"></div></div>
-                    <span className="relative bg-[#050505] px-4 text-[10px] font-mono text-gray-600 uppercase">Or Authenticate Via</span>
+                    <span className="relative bg-[#050505] px-4 text-[10px] font-mono text-gray-600 uppercase">Or Continue With</span>
                   </div>
 
                   <button
@@ -308,7 +312,7 @@ export default function LoginPage() {
                     className="w-full h-12 border border-[#333] hover:border-[#ccff00] hover:bg-[#ccff00]/5 flex items-center justify-center gap-3 transition-all group"
                   >
                     <Fingerprint className="w-4 h-4 text-gray-500 group-hover:text-[#ccff00]" />
-                    <span className="text-xs font-mono text-gray-400 group-hover:text-white uppercase tracking-widest">Use Biometric Auth (Google)</span>
+                    <span className="text-xs font-mono text-gray-400 group-hover:text-white uppercase tracking-widest">Google Account</span>
                   </button>
                 </>
               )}
@@ -319,13 +323,13 @@ export default function LoginPage() {
           {/* Footer Switch */}
           <div className="mt-8 text-center">
             <p className="text-xs font-mono text-gray-600 uppercase mb-2">
-              {isSignUp ? '> ALREADY REGISTERED?' : '> NEW PERSONNEL?'}
+              {isSignUp ? '> Already have an account?' : '> New user?'}
             </p>
             <button
               onClick={() => setIsSignUp(!isSignUp)}
               className="text-[#ccff00] font-bold uppercase tracking-wider border-b border-[#ccff00] hover:border-transparent hover:bg-[#ccff00] hover:text-black transition-all px-1"
             >
-              {isSignUp ? 'ACCESS EXISTING ACCOUNT' : 'REGISTER NEW IDENTITY'}
+              {isSignUp ? 'Login to existing account' : 'Register new account'}
             </button>
           </div>
 

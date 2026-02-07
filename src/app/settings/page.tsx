@@ -18,7 +18,7 @@ export default function SettingsPage() {
                         <Settings className="w-6 h-6 text-[#ccff00]" />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-black uppercase tracking-tighter">System Config</h1>
+                        <h1 className="text-2xl font-black uppercase tracking-tighter">Settings</h1>
                         <p className="text-xs text-gray-500 font-mono">USER_ID: GUEST_01</p>
                     </div>
                 </div>
@@ -76,7 +76,7 @@ export default function SettingsPage() {
 
                     {/* Section: System */}
                     <div className="space-y-4">
-                        <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-gray-500 mb-2">System</h2>
+                        <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-gray-500 mb-2">App Settings</h2>
                         <div className="bg-[#0a0a0a] border border-[#222] p-4 space-y-2">
                             <Button variant="ghost" className="w-full justify-start text-red-500 hover:text-red-400 hover:bg-red-500/10 uppercase text-xs font-bold tracking-wider h-12">
                                 <LogOut className="w-4 h-4 mr-3" />

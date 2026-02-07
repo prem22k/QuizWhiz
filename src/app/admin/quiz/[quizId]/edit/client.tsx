@@ -37,7 +37,7 @@ function SubmitButton({ isSaving }: { isSaving: boolean }) {
       className="w-full sm:w-auto h-10 px-6 bg-[#ccff00] hover:bg-[#bbee00] text-black font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-2 group transition-all"
     >
       {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4 text-black group-hover:rotate-12 transition-transform" />}
-      {isLoading ? 'PROCESSING...' : 'INITIATE NEURAL LINK'}
+      {isLoading ? 'Processing...' : 'Generate with AI'}
     </button>
   );
 }
@@ -194,7 +194,7 @@ export default function EditQuiz({ quizId: propQuizId }: EditQuizProps = {}) {
   };
 
   const handleDeleteQuiz = async () => {
-    if (!confirm('WARNING: PERMANENT DATA PURGE INITIATED. CONFIRM?')) return;
+    if (!confirm('Are you sure you want to delete this? This action cannot be undone.')) return;
 
     try {
       await deleteQuiz(quizId);
@@ -209,12 +209,12 @@ export default function EditQuiz({ quizId: propQuizId }: EditQuizProps = {}) {
     <div className="flex min-h-screen items-center justify-center bg-[#050505] text-[#ccff00] font-mono">
       <div className="flex flex-col items-center gap-4 animate-pulse">
         <Cpu className="w-12 h-12" />
-        <span className="tracking-widest">LOADING SEQUENCE DATA...</span>
+        <span className="tracking-widest">Loading Quiz Data...</span>
       </div>
     </div>
   );
 
-  if (!quiz) return <div className="p-8 bg-[#050505] text-red-500 font-mono">ERROR: SEQUENCE NOT FOUND</div>;
+  if (!quiz) return <div className="p-8 bg-[#050505] text-red-500 font-mono">Error: Quiz Not Found</div>;
 
   return (
     <div className="flex flex-col w-full min-h-screen bg-[#050505] text-white font-display relative overflow-hidden pb-20 md:pb-0">
@@ -231,7 +231,7 @@ export default function EditQuiz({ quizId: propQuizId }: EditQuizProps = {}) {
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 text-[#ccff00]">
             <Terminal className="w-5 h-5" />
-            <span className="font-mono text-sm tracking-widest uppercase">Sequence Configuration</span>
+            <span className="font-mono text-sm tracking-widest uppercase">Edit Quiz</span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -242,7 +242,7 @@ export default function EditQuiz({ quizId: propQuizId }: EditQuizProps = {}) {
             >
               <Link href="/admin">
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Exit
+                Back
               </Link>
             </Button>
             <div className="h-4 w-px bg-[#333]"></div>
@@ -265,7 +265,7 @@ export default function EditQuiz({ quizId: propQuizId }: EditQuizProps = {}) {
           <h1 className="text-4xl font-black uppercase tracking-tighter text-white mb-2">{quiz.title}</h1>
           <div className="flex items-center gap-4 text-xs font-mono text-gray-400">
             <span className="bg-[#111] px-2 py-0.5 border border-[#333] text-[#ccff00]">ID: {quiz.code}</span>
-            <span>STATUS: {quiz.status.toUpperCase()}</span>
+            <span>Status: {quiz.status}</span>
           </div>
         </div>
 
@@ -279,7 +279,7 @@ export default function EditQuiz({ quizId: propQuizId }: EditQuizProps = {}) {
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold uppercase tracking-widest flex items-center gap-2">
                   <span className="w-2 h-2 bg-[#ccff00]"></span>
-                  Data Blocks ({questions.length})
+                  Questions ({questions.length})
                 </h2>
               </div>
 
@@ -327,8 +327,8 @@ export default function EditQuiz({ quizId: propQuizId }: EditQuizProps = {}) {
 
                 {questions.length === 0 && (
                   <div className="p-8 border border-dashed border-[#333] text-center space-y-2">
-                    <p className="text-gray-500 font-mono text-xs uppercase">No Data Blocks Found</p>
-                    <p className="text-[#ccff00] font-bold text-sm">INITIALIZE NEW DATA BLOCK BELOW</p>
+                    <p className="text-gray-500 font-mono text-xs uppercase">No Questions Found</p>
+                    <p className="text-[#ccff00] font-bold text-sm">ADD A NEW QUESTION BELOW</p>
                   </div>
                 )}
               </div>
@@ -339,21 +339,21 @@ export default function EditQuiz({ quizId: propQuizId }: EditQuizProps = {}) {
               <div className="border border-yellow-500/30 bg-yellow-500/5 p-6 space-y-4">
                 <div className="flex justify-between items-center">
                   <h2 className="text-yellow-500 font-bold uppercase tracking-widest text-sm flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4" /> Pending Verification ({pendingQuestions.length})
+                    <AlertTriangle className="w-4 h-4" /> Review Generated Questions ({pendingQuestions.length})
                   </h2>
                   <div className="flex gap-2">
                     <button
                       onClick={() => setPendingQuestions([])}
                       className="text-[10px] font-mono uppercase text-gray-500 hover:text-white"
                     >
-                      Discard All
+                      Discard
                     </button>
                     <button
                       onClick={handleSavePendingQuestions}
                       disabled={isGenerating}
                       className="text-[10px] font-mono uppercase bg-yellow-500 text-black px-3 py-1 font-bold hover:bg-yellow-400 disabled:opacity-50"
                     >
-                      {isGenerating ? 'Processing...' : 'Commit All'}
+                      {isGenerating ? 'Processing...' : 'Save All'}
                     </button>
                   </div>
                 </div>
@@ -363,7 +363,7 @@ export default function EditQuiz({ quizId: propQuizId }: EditQuizProps = {}) {
                     <div key={i} className="bg-[#0a0a0a] p-3 border border-[#333] flex justify-between items-start">
                       <div>
                         <p className="text-sm font-bold text-gray-300">{q.questionText}</p>
-                        <p className="text-[10px] text-gray-600 font-mono mt-1">AI GENERATED CONTENT</p>
+                        <p className="text-[10px] text-gray-600 font-mono mt-1">AI Generated</p>
                       </div>
                       <button onClick={() => handleDiscardPending(i)} className="text-gray-600 hover:text-red-500">
                         <X className="w-3 h-3" />
@@ -384,23 +384,23 @@ export default function EditQuiz({ quizId: propQuizId }: EditQuizProps = {}) {
 
               <h2 className="font-bold uppercase tracking-widest text-white mb-6 flex items-center gap-2">
                 <Plus className="w-4 h-4 text-[#ccff00]" />
-                Inject New Data Block
+                Add New Question
               </h2>
 
               <form onSubmit={handleAddQuestion} className="space-y-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-mono text-gray-500 uppercase">Query Parameter</label>
+                  <label className="text-[10px] font-mono text-gray-500 uppercase">Question</label>
                   <input
                     value={questionText}
                     onChange={(e) => setQuestionText(e.target.value)}
-                    placeholder="ENTER_QUERY..."
+                    placeholder="Enter question text..."
                     className="w-full bg-[#050505] border border-[#333] p-3 text-white font-mono placeholder:text-gray-800 focus:border-[#ccff00] focus:outline-none transition-all text-sm"
                     required
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-mono text-gray-500 uppercase">Response Options</label>
+                  <label className="text-[10px] font-mono text-gray-500 uppercase">Answers</label>
                   <div className="grid grid-cols-1 gap-2">
                     {options.map((option, index) => (
                       <div key={index} className="flex gap-2 items-center">
@@ -413,7 +413,7 @@ export default function EditQuiz({ quizId: propQuizId }: EditQuizProps = {}) {
                             setOptions(newOptions);
                           }}
                           className="flex-1 bg-[#050505] border border-[#333] p-2 text-white font-mono text-xs focus:border-[#ccff00] focus:outline-none"
-                          placeholder={`OPTION_${index}`}
+                          placeholder={`Option ${index + 1}`}
                           required
                         />
                         <input
@@ -450,7 +450,7 @@ export default function EditQuiz({ quizId: propQuizId }: EditQuizProps = {}) {
                 </div>
 
                 <button type="submit" className="w-full h-10 border border-[#ccff00] text-[#ccff00] hover:bg-[#ccff00] hover:text-black font-bold uppercase tracking-widest text-xs transition-colors">
-                  Commit Data Block
+                  Add Question
                 </button>
               </form>
             </div>
@@ -465,15 +465,15 @@ export default function EditQuiz({ quizId: propQuizId }: EditQuizProps = {}) {
               <div className="p-6 space-y-6">
                 <div className="flex items-center gap-2 mb-2">
                   <Sparkles className="w-5 h-5 text-purple-400" />
-                  <h2 className="font-bold uppercase tracking-widest text-white">Neural Cortex</h2>
+                  <h2 className="font-bold uppercase tracking-widest text-white">AI Generator</h2>
                 </div>
                 <p className="text-[10px] font-mono text-gray-500 uppercase leading-relaxed">
-                  Access external neural networks to generate procedural data blocks based on subject parameters.
+                  Generate questions automatically based on a topic.
                 </p>
 
                 <form action={generateAction} onSubmit={handleGenerateSubmit} className="space-y-4">
                   <div className="space-y-1">
-                    <label className="text-[10px] font-mono text-gray-500 uppercase">Target Subject</label>
+                    <label className="text-[10px] font-mono text-gray-500 uppercase">Topic</label>
                     <input name="subject" placeholder="E.G. QUANTUM PHYSICS" className="w-full bg-[#050505] border border-[#333] p-2 text-white font-mono text-xs focus:border-purple-500 focus:outline-none placeholder:text-gray-800 uppercase" />
                   </div>
 
@@ -498,7 +498,7 @@ export default function EditQuiz({ quizId: propQuizId }: EditQuizProps = {}) {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent className="bg-[#0a0a0a] border-[#333] text-white">
-                          {[1, 3, 5, 10].map(n => <SelectItem key={n} value={String(n)}>{n} BLOCKS</SelectItem>)}
+                          {[1, 3, 5, 10].map(n => <SelectItem key={n} value={String(n)}>{n} Questions</SelectItem>)}
                         </SelectContent>
                       </Select>
                     </div>
@@ -515,7 +515,7 @@ export default function EditQuiz({ quizId: propQuizId }: EditQuizProps = {}) {
                 <button className="w-full h-14 bg-[#ccff00] text-black font-black uppercase tracking-widest hover:bg-white transition-colors relative group overflow-hidden">
                   <span className="relative z-10 flex items-center justify-center gap-2">
                     <Terminal className="w-5 h-5" />
-                    Initiate Sequence
+                    Start Quiz
                   </span>
                 </button>
               </Link>
