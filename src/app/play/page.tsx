@@ -38,7 +38,7 @@ const THEMES: Record<number, { bgImage: string; bleedingText: string; bleedingCl
     bgImage: "https://images.unsplash.com/photo-1517466787929-bc90951d0974?q=80&w=1000&auto=format&fit=crop", // Dark Stadium/Action
     bleedingText: "SPORT",
     bleedingClass: "absolute top-0 right-0 text-7xl font-black text-white/5 uppercase rotate-180 writing-mode-vertical origin-top-right whitespace-nowrap select-none",
-    aspect: "aspect-square"
+    aspect: "aspect-[3/4]"
   },
   [TRIVIA_CATEGORIES.GEOGRAPHY]: {
     bgImage: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1000&auto=format&fit=crop", // Earth from space/Global
@@ -50,7 +50,7 @@ const THEMES: Record<number, { bgImage: string; bleedingText: string; bleedingCl
     bgImage: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1000&auto=format&fit=crop", // Retro Arcade/Neon
     bleedingText: "8-BIT",
     bleedingClass: "absolute -bottom-4 -right-4 text-8xl font-black text-white/5 uppercase select-none",
-    aspect: "aspect-[4/5]"
+    aspect: "aspect-[3/4]"
   },
   [TRIVIA_CATEGORIES.HISTORY]: {
     bgImage: "https://images.unsplash.com/photo-1461360370896-922624d12aa1?q=80&w=1000&auto=format&fit=crop", // Old Technology/Camera/History
@@ -155,7 +155,7 @@ export default function HomePage() {
         </section>
 
         {/* Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 px-4 gap-4 items-start">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 px-6 gap-6 items-start pb-40">
           {TOPICS.map((topic) => {
             const theme = THEMES[topic.id];
             return (
@@ -203,7 +203,7 @@ export default function HomePage() {
           {/* Special */}
           <div
             onClick={() => setIsCustomOpen(true)}
-            className="group relative w-full bg-[#ccff00] border-4 border-[#ccff00] flex flex-col justify-center items-center p-4 overflow-hidden transition-transform active:scale-95 cursor-pointer aspect-square shadow-[0_0_20px_rgba(204,255,0,0.4)]"
+            className="group relative w-full bg-[#ccff00] border-4 border-[#ccff00] flex flex-col justify-center items-center p-4 overflow-hidden transition-transform active:scale-95 cursor-pointer aspect-[3/4] shadow-[0_0_20px_rgba(204,255,0,0.4)]"
           >
             <Sparkles className="text-black w-10 h-10 mb-2 animate-pulse" />
             <h3 className="text-black text-lg font-black leading-none tracking-tight uppercase text-center font-display">
