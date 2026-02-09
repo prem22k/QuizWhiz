@@ -73,8 +73,8 @@ export const functions: Functions = firebaseConfig.apiKey ? getFunctions(app, 'u
 // Export app for advanced use cases
 export { app };
 
-// Debug: Make db available in window for browser console testing
-if (typeof window !== 'undefined') {
+// Debug: Make db available in window for browser console testing in development
+if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
   (window as any).db = db;
   console.log('🔧 db available in window.db for debugging');
 }
