@@ -86,14 +86,15 @@ export default function PlayPage({ quizId: propQuizId }: PlayPageProps = {}) {
       unsubQuestions();
     };
   }, [quizId]);
-  useEffect(() => {
-    if (isHost && user && quiz && quiz.status === 'lobby') {
-      const amIJoined = participants.some(p => p.id === user.uid);
-      if (!amIJoined) {
-        joinQuiz(quizId, user.displayName || "Host").catch(console.error);
-      }
-    }
-  }, [isHost, user, quiz, participants]);
+  // 1b. Host Auto-Join Removed
+  // useEffect(() => {
+  //   if (isHost && user && quiz && quiz.status === 'lobby') {
+  //     const amIJoined = participants.some(p => p.id === user.uid);
+  //     if (!amIJoined) {
+  //       joinQuiz(quizId, user.displayName || "Host").catch(console.error);
+  //     }
+  //   }
+  // }, [isHost, user, quiz, participants]);
   useEffect(() => {
     if (!quiz || !currentQuestion || quiz.status !== 'active' || !quiz.questionStartTime) {
       return;
@@ -234,13 +235,13 @@ export default function PlayPage({ quizId: propQuizId }: PlayPageProps = {}) {
 
   const hostStartGame = async () => {
     if (questions.length === 0) return toast({ title: "No questions loaded!" });
+    if (!currentParticipant) {
+      toast({ variant: 'destructive', title: "Join check failed", description: "Please join the quiz with your name first" });
+      return;
+    }
     if (isProcessing) return;
     setIsProcessing(true);
     try {
-      if (!currentParticipant && user) {
-        const pId = await joinQuiz(quizId, user.displayName || "Host");
-        setCurrentParticipant({ id: pId, name: user.displayName || "Host", totalScore: 0, currentStreak: 0, answers: {}, quizId } as any);
-      }
       await updateQuizStatus(quizId, 'lobby');
       await startQuestion(quizId, 0);
     } finally {
