@@ -548,13 +548,20 @@ export const joinQuiz = async (
       quizId,
       "participants"
     );
-    const batch = writeBatch(db);
+
+    // Use UID as Document ID and increment participant count only once
     const userDocRef = doc(participantsRef, user.uid);
+    const existing = await getDoc(userDocRef);
+    if (existing.exists()) {
+      return user.uid;
+    }
+
+    const batch = writeBatch(db);
     const quizRef = doc(db, "quizzes", quizId);
-    
+
     batch.set(userDocRef, participantData);
     batch.update(quizRef, { participantCount: increment(1) });
-    
+
     await batch.commit();
     console.log("✅ Participant joined and count incremented");
 

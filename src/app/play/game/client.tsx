@@ -237,6 +237,10 @@ export default function GameClient() {
         if (isProcessing || !quizId) return;
         setIsProcessing(true);
         try {
+            if (!currentParticipant && user) {
+                const pId = await joinQuiz(quizId, user.displayName || "Host");
+                setCurrentParticipant({ id: pId, name: user.displayName || "Host", totalScore: 0, currentStreak: 0, answers: {}, quizId } as any);
+            }
             await updateQuizStatus(quizId, 'lobby');
             await startQuestion(quizId, 0);
         } finally {
