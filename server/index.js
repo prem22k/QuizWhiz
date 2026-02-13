@@ -4,7 +4,6 @@ import { fileURLToPath } from 'url';
 
 import express from 'express';
 import cors from 'cors';
-import nodemailer from 'nodemailer';
 import { google } from 'googleapis';
 import dotenv from 'dotenv';
 import process from 'process';
@@ -42,8 +41,8 @@ if (!hasServiceAccountCreds) {
 }
 
 
-// ─── Email Transporter (OAuth2 refresh token) ───────────────────────
-const createTransporter = async () => {
+// ─── Gmail API Sender (OAuth2 refresh token) ────────────────────────
+const sendGmail = async ({ to, subject, text, html }) => {
     if (!hasOAuthCreds || !GMAIL_USER) {
         console.warn('⚠️ Missing Gmail OAuth2 credentials. Email will be mocked.');
         return null;
@@ -59,26 +58,37 @@ const createTransporter = async () => {
 
         const accessTokenResponse = await oAuth2Client.getAccessToken();
         const accessToken = accessTokenResponse?.token;
-
         if (!accessToken) {
             console.error('❌ Failed to obtain access token from refresh token.');
             return null;
         }
 
-        return nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                type: 'OAuth2',
-                user: GMAIL_USER,
-                clientId: GMAIL_CLIENT_ID,
-                clientSecret: GMAIL_CLIENT_SECRET,
-                refreshToken: GMAIL_REFRESH_TOKEN,
-                accessToken,
-            },
+        const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
+        const mimeMessage = [
+            `From: QuizWhiz <${GMAIL_USER}>`,
+            `To: ${to}`,
+            `Subject: ${subject}`,
+            'MIME-Version: 1.0',
+            'Content-Type: text/html; charset=utf-8',
+            '',
+            html || text || '',
+        ].join('\r\n');
+
+        const raw = Buffer.from(mimeMessage)
+            .toString('base64')
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=+$/g, '');
+
+        await gmail.users.messages.send({
+            userId: 'me',
+            requestBody: { raw },
         });
+
+        return { success: true };
     } catch (error) {
-         console.error('❌ Failed to create transporter:', error);
-         return null;
+        console.error('❌ Failed to send via Gmail API:', error);
+        return { success: false, error };
     }
 };
 
@@ -137,19 +147,19 @@ app.post('/send-otp', async (req, res) => {
     }
 
     try {
-        const transporter = await createTransporter();
-        if (!transporter) {
-            console.log(`[MOCK EMAIL] To: ${email}, Code: ${code}`);
-            return res.json({ success: true, warning: 'Email mocked (missing credentials)' });
-        }
-
-        await transporter.sendMail({
-            from: `QuizWhiz <${GMAIL_USER}>`,
+        const result = await sendGmail({
             to: email,
             subject: 'Your Verification Code',
             text: `Your verification code is: ${code}`,
             html: htmlContent,
         });
+        if (!result) {
+            console.log(`[MOCK EMAIL] To: ${email}, Code: ${code}`);
+            return res.json({ success: true, warning: 'Email mocked (missing credentials)' });
+        }
+        if (!result.success) {
+            return res.status(500).json({ error: 'Failed to send email' });
+        }
         console.log(`✅ OTP sent to ${email}`);
         res.json({ success: true });
     } catch (error) {
@@ -173,19 +183,19 @@ app.post('/send-welcome', async (req, res) => {
     }
 
     try {
-        const transporter = await createTransporter();
-        if (!transporter) {
-            console.log(`[MOCK EMAIL] To: ${email}, Subject: Welcome!`);
-            return res.json({ success: true, warning: 'Email mocked (missing credentials)' });
-        }
-
-        await transporter.sendMail({
-            from: `QuizWhiz <${GMAIL_USER}>`,
+        const result = await sendGmail({
             to: email,
             subject: 'Welcome to QuizWhiz!',
             text: `Hi ${name || 'there'},\n\nWelcome to QuizWhiz! We are excited to have you on board.`,
             html: htmlContent,
         });
+        if (!result) {
+            console.log(`[MOCK EMAIL] To: ${email}, Subject: Welcome!`);
+            return res.json({ success: true, warning: 'Email mocked (missing credentials)' });
+        }
+        if (!result.success) {
+            return res.status(500).json({ error: 'Failed to send email' });
+        }
         console.log(`✅ Welcome email sent to ${email}`);
         res.json({ success: true });
     } catch (error) {
