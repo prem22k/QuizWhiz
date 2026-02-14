@@ -5,7 +5,22 @@ import { Settings, User, Shield, Monitor, Volume2, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { auth } from '@/firebase';
+import { deleteUser, signOut } from 'firebase/auth';
+import { sendOtp } from '@/app/actions/auth-actions';
+import { useRouter } from 'next/navigation';
+import { AlertTriangle, Loader2 } from 'lucide-react';
 export default function SettingsPage() {
     return (
         <div className="min-h-screen bg-[#050505] text-white p-6 pb-24">
@@ -81,6 +96,8 @@ export default function SettingsPage() {
                                 <LogOut className="w-4 h-4 mr-3" />
                                 Disconnect Session
                             </Button>
+
+                            <DeleteAccountSection />
                             <div className="pt-2 border-t border-[#222] text-center">
                                 <p className="text-[10px] text-gray-700 font-mono">VERSION: 2.1.0_PROD</p>
                             </div>
@@ -94,7 +111,7 @@ export default function SettingsPage() {
 
 function DownloadSection() {
     return (
-        <div className="space-y-4">
+        <div className="hidden md:block space-y-4">
             <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-gray-500 mb-2">Get the Desktop App</h2>
             <div className="bg-[#0a0a0a] border border-[#222] p-6 text-center space-y-6">
                 <div className="flex justify-center mb-4">
@@ -134,5 +151,164 @@ function DownloadSection() {
                 </div>
             </div>
         </div>
+    );
+}
+
+function DeleteAccountSection() {
+    const [isOpen, setIsOpen] = useState(false);
+    const [step, setStep] = useState<'confirm' | 'otp'>('confirm');
+    const [isLoading, setIsLoading] = useState(false);
+    const [otp, setOtp] = useState('');
+    const [inputOtp, setInputOtp] = useState('');
+    const [error, setError] = useState('');
+    const router = useRouter();
+
+    const handleSendOtp = async () => {
+        setIsLoading(true);
+        setError('');
+        try {
+            const user = auth.currentUser;
+            if (!user || !user.email) {
+                setError('No user logged in or email missing.');
+                setIsLoading(false);
+                return;
+            }
+
+            const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+            setOtp(generatedOtp);
+
+            const result = await sendOtp(user.email, generatedOtp);
+            if (result.success) {
+                setStep('otp');
+            } else {
+                setError(result.error || 'Failed to send OTP.');
+            }
+        } catch (err: any) {
+            setError(err.message || 'An error occurred.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        if (inputOtp !== otp) {
+            setError('Invalid OTP. Please try again.');
+            return;
+        }
+
+        setIsLoading(true);
+        setError('');
+        try {
+            const user = auth.currentUser;
+            if (user) {
+                await deleteUser(user);
+                await signOut(auth);
+                router.push('/');
+            }
+        } catch (err: any) {
+            console.error("Delete error:", err);
+            if (err.code === 'auth/requires-recent-login') {
+                setError('Security timeout. Please log in again to delete your account.');
+            } else {
+                setError(err.message || 'Failed to delete account.');
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Reset state when dialog closes
+    useEffect(() => {
+        if (!isOpen) {
+            setStep('confirm');
+            setOtp('');
+            setInputOtp('');
+            setError('');
+            setIsLoading(false);
+        }
+    }, [isOpen]);
+
+    return (
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+                <Button variant="ghost" className="w-full justify-start text-red-500/70 hover:text-red-500 hover:bg-red-500/10 uppercase text-xs font-bold tracking-wider h-12 border-t border-[#222]">
+                    <Shield className="w-4 h-4 mr-3" />
+                    Delete Account
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-[#09090b] border-[#27272a] text-white sm:max-w-md">
+                <DialogHeader>
+                    <DialogTitle className="text-xl font-bold uppercase tracking-tight text-white flex items-center gap-2">
+                        <AlertTriangle className="w-5 h-5 text-red-500" />
+                        Delete Account
+                    </DialogTitle>
+                    <DialogDescription className="text-gray-400">
+                        This action cannot be undone. This will permanently delete your account and remove your data from our servers.
+                    </DialogDescription>
+                </DialogHeader>
+
+                {error && (
+                    <Alert variant="destructive" className="bg-red-500/10 border-red-500/50 text-red-500">
+                        <AlertTriangle className="h-4 w-4" />
+                        <AlertTitle>Error</AlertTitle>
+                        <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                )}
+
+                {step === 'confirm' ? (
+                    <div className="space-y-4 py-4">
+                        <div className="p-4 bg-red-500/5 border border-red-500/20 rounded-lg">
+                            <p className="text-sm text-red-200">
+                                To confirm deletion, we will send a One-Time Password (OTP) to your registered email address.
+                            </p>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="otp" className="text-xs uppercase font-bold text-gray-500">Enter Verification Code</Label>
+                            <Input
+                                id="otp"
+                                placeholder="000000"
+                                value={inputOtp}
+                                onChange={(e) => setInputOtp(e.target.value)}
+                                className="bg-[#111] border-[#333] text-white font-mono text-center text-2xl tracking-[0.5em] h-14"
+                                maxLength={6}
+                            />
+                            <p className="text-xs text-gray-500">
+                                Sent to {auth.currentUser?.email}
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                <DialogFooter className="gap-2 sm:gap-0">
+                    <Button variant="ghost" onClick={() => setIsOpen(false)} disabled={isLoading} className="text-gray-400 hover:text-white">
+                        Cancel
+                    </Button>
+                    {step === 'confirm' ? (
+                        <Button
+                            variant="destructive"
+                            onClick={handleSendOtp}
+                            disabled={isLoading}
+                            className="bg-red-600 hover:bg-red-700 text-white font-bold uppercase tracking-wider"
+                        >
+                            {isLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                            Send OTP
+                        </Button>
+                    ) : (
+                        <Button
+                            variant="destructive"
+                            onClick={handleDelete}
+                            disabled={isLoading || inputOtp.length !== 6}
+                            className="bg-red-600 hover:bg-red-700 text-white font-bold uppercase tracking-wider w-full sm:w-auto"
+                        >
+                            {isLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                            Confirm Delete
+                        </Button>
+                    )}
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     );
 }
