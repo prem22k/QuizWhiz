@@ -20,6 +20,7 @@ app.use(express.json());
 
 // ─── Shared OAuth2 Config ────────────────────────────────────────────
 const GMAIL_CLIENT_ID = process.env.GMAIL_CLIENT_ID;
+
 const GMAIL_CLIENT_SECRET = process.env.GMAIL_CLIENT_SECRET;
 const GMAIL_REFRESH_TOKEN = process.env.GMAIL_REFRESH_TOKEN;
 const GMAIL_USER = process.env.GMAIL_USER_EMAIL;
@@ -242,7 +243,7 @@ app.post('/log-user', async (req, res) => {
     // Send asynchronously (don't block response)
     sendGmail({
         to: adminEmail,
-        subject: '👤 New User Signed Up',
+        subject: 'New User Signed Up',
         html: adminHtml,
         text: `New User Signed Up: ${name} (${email})`
     }).then(res => {
