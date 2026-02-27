@@ -143,16 +143,35 @@ export const fetchQuestionsFromAPI = async (
         } else {
             categoryId = category;
         }
-        const url = `https://opentdb.com/api.php?amount=${amount}&category=${categoryId}&type=multiple&difficulty=${difficulty}`;
-        console.log(`🌐 Fetching trivia from: ${url}`);
-        const response = await fetch(url);
-        const data: OpenTDBResponse = await response.json();
+        // Attempt 1: Exact match
+        let fetchUrl = `https://opentdb.com/api.php?amount=${amount}&category=${categoryId}&type=multiple&difficulty=${difficulty}`;
+        console.log(`🌐 Fetching trivia (Attempt 1): ${fetchUrl}`);
+        let response = await fetch(fetchUrl);
+        let data: OpenTDBResponse = await response.json();
+
+        // Attempt 2: Relax difficulty
+        if (data.response_code === 1) {
+            console.warn(`⚠️ Not enough questions at ${difficulty} difficulty. Relaxing difficulty constraint...`);
+            fetchUrl = `https://opentdb.com/api.php?amount=${amount}&category=${categoryId}&type=multiple`;
+            response = await fetch(fetchUrl);
+            data = await response.json();
+        }
+
+        // Attempt 3: Relax amount (limit to 5)
+        if (data.response_code === 1 && amount > 5) {
+            console.warn(`⚠️ Still not enough questions. Reducing amount to 5...`);
+            fetchUrl = `https://opentdb.com/api.php?amount=5&category=${categoryId}&type=multiple`;
+            response = await fetch(fetchUrl);
+            data = await response.json();
+        }
 
         if (data.response_code !== 0) {
             if (data.response_code === 1) {
-                throw new Error("We couldn't find enough questions for this topic. Try another one!");
+                throw new Error(`We couldn't find enough questions for this topic on OpenTDB. Try another one!`);
+            } else if (data.response_code === 5) {
+                throw new Error(`Too many requests to the trivia database. Please wait a moment and try again.`);
             }
-            throw new Error(`Failed to fetch questions from the trivia database.`);
+            throw new Error(`Failed to fetch questions from the trivia database (Error Code: ${data.response_code}).`);
         }
         return data.results.map((q, index) => {
             const correctAnswer = decodeText(q.correct_answer);
