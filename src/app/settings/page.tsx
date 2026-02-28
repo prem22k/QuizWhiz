@@ -19,7 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { auth } from '@/firebase';
-import { deleteUser, signOut } from 'firebase/auth';
+import { deleteUser, signOut, updateProfile } from 'firebase/auth';
 import { sendOtp, sendSupportEmail } from '@/app/actions/auth-actions';
 import { useRouter } from 'next/navigation';
 import { AlertTriangle, Loader2 } from 'lucide-react';
@@ -42,25 +42,7 @@ export default function SettingsPage() {
                 {/* Left Column (Desktop) */}
                 <div className="md:col-span-7 space-y-8">
                     {/* Section: Profile */}
-                    <div className="space-y-4">
-                        <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-gray-500 mb-2">UserProfile</h2>
-                        <div className="bg-[#0a0a0a] border border-[#222] p-4 space-y-4">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-[#222] flex items-center justify-center">
-                                        <User className="w-5 h-5 text-gray-400" />
-                                    </div>
-                                    <div>
-                                        <p className="font-bold uppercase text-sm">Guest User</p>
-                                        <p className="text-xs text-gray-600">Sync Disabled</p>
-                                    </div>
-                                </div>
-                                <Button variant="outline" size="sm" className="h-8 text-[10px] uppercase border-[#333] hover:border-[#ccff00] hover:text-[#ccff00]">
-                                    Edit
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
+                    <UserProfileSection />
 
                     {/* Section: Preferences */}
                     <div className="space-y-4">
@@ -111,6 +93,86 @@ export default function SettingsPage() {
                 </div>
             </div>
         </div >
+    );
+}
+
+function UserProfileSection() {
+    const [currentUser, setCurrentUser] = useState(auth.currentUser);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editName, setEditName] = useState('');
+    const [isSaving, setIsSaving] = useState(false);
+
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            setCurrentUser(user);
+            if (user) {
+                setEditName(user.displayName || user.email?.split('@')[0] || '');
+            }
+        });
+        return () => unsubscribe();
+    }, []);
+
+    const handleSave = async () => {
+        if (!currentUser || !editName.trim()) return;
+        setIsSaving(true);
+        try {
+            await updateProfile(currentUser, { displayName: editName.trim() });
+            setCurrentUser({ ...currentUser, displayName: editName.trim() } as any);
+            setIsEditing(false);
+        } catch (error) {
+            console.error('Error updating profile:', error);
+        } finally {
+            setIsSaving(false);
+        }
+    }
+
+    const displayName = currentUser?.displayName || currentUser?.email?.split('@')[0] || 'Guest User';
+    const email = currentUser?.email || 'Sync Disabled';
+
+    return (
+        <div className="space-y-4">
+            <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-gray-500 mb-2">UserProfile</h2>
+            <div className="bg-[#0a0a0a] border border-[#222] p-4 space-y-4">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-[#222] flex items-center justify-center">
+                            <User className="w-5 h-5 text-gray-400" />
+                        </div>
+                        {isEditing ? (
+                            <div className="flex flex-col gap-2">
+                                <Input
+                                    value={editName}
+                                    onChange={(e) => setEditName(e.target.value)}
+                                    className="h-8 text-sm bg-black text-white border-[#333]"
+                                    placeholder="Display Name"
+                                    autoFocus
+                                />
+                            </div>
+                        ) : (
+                            <div>
+                                <p className="font-bold uppercase text-sm">{displayName}</p>
+                                <p className="text-xs text-gray-600">{email}</p>
+                            </div>
+                        )}
+                    </div>
+                    {isEditing ? (
+                        <div className="flex gap-2">
+                            <Button variant="ghost" size="sm" onClick={() => setIsEditing(false)} disabled={isSaving} className="h-8 text-[10px] uppercase text-gray-400 hover:text-white">
+                                Cancel
+                            </Button>
+                            <Button variant="outline" size="sm" onClick={handleSave} disabled={isSaving || !editName.trim()} className="h-8 text-[10px] uppercase border-[#333] hover:border-[#ccff00] hover:text-[#ccff00]">
+                                {isSaving ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : null}
+                                Save
+                            </Button>
+                        </div>
+                    ) : (
+                        <Button variant="outline" size="sm" onClick={() => setIsEditing(true)} disabled={!currentUser} className="h-8 text-[10px] uppercase border-[#333] hover:border-[#ccff00] hover:text-[#ccff00]">
+                            Edit
+                        </Button>
+                    )}
+                </div>
+            </div>
+        </div>
     );
 }
 

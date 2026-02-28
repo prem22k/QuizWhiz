@@ -3,8 +3,8 @@
 This document summarizes the current status of the 8 pre-deployment bugs identified during the testing phase.
 
 ## Status Summary
-- ✅ **Fixed (6)**
-- 🕵️ **Confirmed & Pending Fix (1)**
+- ✅ **Fixed (7)**
+- 🕵️ **Confirmed & Pending Fix (0) / (0 in-scope)**
 - ⚠️ **External Dependency / Won't Fix Directly (1)**
 
 ---
@@ -39,9 +39,9 @@ This document summarizes the current status of the 8 pre-deployment bugs identif
 * **Impact**: High
 
 ### 6. Settings Page – Edit Button Not Working
-* **Status**: 🕵️ **CONFIRMED**
+* **Status**: ✅ **FIXED** (Resolved)
 * **Description**: The "Edit" button for the user profile triggers no action.
-* **Root Cause Found**: In `src/app/settings/page.tsx`, the `<Button>` component for "Edit" is purely presentational and lacks an `onClick` handler pointing to an edit modal or form route.
+* **Fix Applied**: Hooked the UserProfile block in `settings/page.tsx` up to Firebase Auth. Created a dynamic `<UserProfileSection />` component with an `isEditing` toggle state, an `<Input>` form for modifying the display name, and a "Save" action via Firebase's `updateProfile` method.
 * **Impact**: Medium
 
 ### 7. Admin Page – Results Section Not Working
@@ -59,4 +59,4 @@ This document summarizes the current status of the 8 pre-deployment bugs identif
 ---
 
 ## Recommended Next Steps
-Investigate the **Signal/Error Issue on Manual Question Addition (Issue 5)** and implement missing UI interactions for the **Footer Links (Issue 2)** and **Settings Edit Button (Issue 6)**.
+Implement missing UI functionality for **Footer Links (Issue 2)**. All major logic bugs have been fixed.
