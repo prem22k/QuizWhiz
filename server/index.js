@@ -192,7 +192,7 @@ app.post('/log-user', async (req, res) => {
         adminHtml = adminHtml
             .replace(/{{USER_NAME}}/g, name)
             .replace(/{{USER_EMAIL}}/g, email)
-            .replace(/{{SIGNUP_TIMESTAMP}}/g, new Date().toLocaleString())
+            .replace(/{{SIGNUP_TIMESTAMP}}/g, new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }))
             .replace(/{{USER_ID}}/g, Math.random().toString(36).substr(2, 9).toUpperCase());
     } else {
         adminHtml = `<p>New User Signed Up:<br>Name: ${name}<br>Email: ${email}</p>`;
@@ -221,7 +221,7 @@ app.post('/log-user', async (req, res) => {
             range: 'Sheet1!A:D',
             valueInputOption: 'USER_ENTERED',
             requestBody: {
-                values: [[name, email, phone || 'N/A', new Date().toLocaleString()]],
+                values: [[name, email, phone || 'N/A', new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })]],
             },
         });
         res.json({ success: true });
@@ -249,7 +249,7 @@ app.post('/contact-support', async (req, res) => {
             .replace(/{{CATEGORY}}/g, category || 'General')
             .replace(/{{SUBJECT}}/g, subject)
             .replace(/{{MESSAGE}}/g, message.replace(/\n/g, '<br>'))
-            .replace(/{{TIMESTAMP}}/g, new Date().toLocaleString());
+            .replace(/{{TIMESTAMP}}/g, new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }));
     } else {
         htmlContent = `
             <h3>Customer Support Request</h3>
