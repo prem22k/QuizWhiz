@@ -924,7 +924,7 @@ export const getLeaderboard = async (quizId: string): Promise<LeaderboardEntry[]
 
     const leaderboard: LeaderboardEntry[] = participants.map(p => {
       let correctCount = 0;
-      Object.entries(p.answers).forEach(([qIdxStr, aIdx]) => {
+      Object.entries(p.answers || {}).forEach(([qIdxStr, aIdx]) => {
         const qIdx = parseInt(qIdxStr);
         if (questions[qIdx] && questions[qIdx].correctOptionIndex === aIdx) {
           correctCount++;
