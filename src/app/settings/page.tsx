@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Settings, User, Shield, Monitor, Volume2, LogOut } from 'lucide-react';
+import { Settings, User, Shield, Monitor, Volume2, LogOut, Headphones, Send, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -15,10 +15,12 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { auth } from '@/firebase';
 import { deleteUser, signOut } from 'firebase/auth';
-import { sendOtp } from '@/app/actions/auth-actions';
+import { sendOtp, sendSupportEmail } from '@/app/actions/auth-actions';
 import { useRouter } from 'next/navigation';
 import { AlertTriangle, Loader2 } from 'lucide-react';
 export default function SettingsPage() {
@@ -81,6 +83,9 @@ export default function SettingsPage() {
                             </div>
                         </div>
                     </div>
+
+                    {/* Section: Customer Service */}
+                    <CustomerServiceSection />
                 </div>
 
                 {/* Right Column (Desktop) */}
@@ -106,6 +111,250 @@ export default function SettingsPage() {
                 </div>
             </div>
         </div >
+    );
+}
+
+function CustomerServiceSection() {
+    const [isOpen, setIsOpen] = useState(false);
+    const [subject, setSubject] = useState('');
+    const [message, setMessage] = useState('');
+    const [category, setCategory] = useState('general');
+    const [agreeToEmail, setAgreeToEmail] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState(false);
+    const [currentUser, setCurrentUser] = useState(auth.currentUser);
+    const router = useRouter();
+
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            setCurrentUser(user);
+        });
+        return () => unsubscribe();
+    }, []);
+
+    const isLoggedIn = !!currentUser;
+
+    const categories = [
+        { value: 'general', label: 'General Inquiry' },
+        { value: 'bug', label: 'Bug Report' },
+        { value: 'feature', label: 'Feature Request' },
+        { value: 'account', label: 'Account Issue' },
+        { value: 'other', label: 'Other' },
+    ];
+
+    const handleButtonClick = () => {
+        if (!isLoggedIn) {
+            router.push('/login?redirect=/settings');
+            return;
+        }
+        setIsOpen(true);
+    };
+
+    const handleSubmit = async () => {
+        if (!currentUser || !currentUser.email) {
+            setError('You must be logged in to contact support.');
+            return;
+        }
+        if (!subject.trim() || !message.trim()) {
+            setError('Please fill in all fields.');
+            return;
+        }
+        if (!agreeToEmail) {
+            setError('Please agree to be contacted via email.');
+            return;
+        }
+
+        setIsLoading(true);
+        setError('');
+
+        try {
+            const result = await sendSupportEmail({
+                name: currentUser.displayName || currentUser.email.split('@')[0],
+                email: currentUser.email,
+                subject: subject.trim(),
+                message: message.trim(),
+                category,
+            });
+
+            if (result.success) {
+                setSuccess(true);
+            } else {
+                setError(result.error || 'Failed to send message.');
+            }
+        } catch (err: any) {
+            setError(err.message || 'An unexpected error occurred.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (!isOpen) {
+            setSubject('');
+            setMessage('');
+            setCategory('general');
+            setAgreeToEmail(false);
+            setError('');
+            setSuccess(false);
+            setIsLoading(false);
+        }
+    }, [isOpen]);
+
+    return (
+        <div className="space-y-4">
+            <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-gray-500 mb-2">Customer Service</h2>
+            <div className="bg-[#0a0a0a] border border-[#222] p-4 space-y-4">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-[#ccff00]/10 flex items-center justify-center border border-[#ccff00]/20">
+                        <Headphones className="w-5 h-5 text-[#ccff00]" />
+                    </div>
+                    <div>
+                        <p className="font-bold uppercase text-sm">Need Help?</p>
+                        <p className="text-xs text-gray-500">Report issues or ask questions</p>
+                    </div>
+                </div>
+
+                <Dialog open={isOpen} onOpenChange={setIsOpen}>
+                    <Button
+                        className="w-full bg-[#ccff00] text-black hover:bg-[#b8e600] font-bold uppercase text-xs tracking-widest h-11"
+                        onClick={handleButtonClick}
+                    >
+                        <Send className="w-4 h-4 mr-2" />
+                        {isLoggedIn ? 'Contact Support' : 'Login to Contact Support'}
+                    </Button>
+                    <DialogContent className="bg-[#09090b] border-[#27272a] text-white sm:max-w-md max-h-[90vh] overflow-y-auto">
+                        {success ? (
+                            <>
+                                <DialogHeader>
+                                    <DialogTitle className="text-xl font-bold uppercase tracking-tight text-white flex items-center gap-2">
+                                        <CheckCircle2 className="w-5 h-5 text-[#ccff00]" />
+                                        Message Sent
+                                    </DialogTitle>
+                                    <DialogDescription className="text-gray-400">
+                                        Your support request has been submitted successfully. Our team will review it shortly.
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <div className="py-6 text-center">
+                                    <div className="w-16 h-16 mx-auto bg-[#ccff00]/10 rounded-full flex items-center justify-center border border-[#ccff00]/30 mb-4">
+                                        <CheckCircle2 className="w-8 h-8 text-[#ccff00]" />
+                                    </div>
+                                    <p className="text-sm text-gray-400">We typically respond within 24-48 hours.</p>
+                                </div>
+                                <DialogFooter>
+                                    <Button
+                                        onClick={() => setIsOpen(false)}
+                                        className="w-full bg-[#ccff00] text-black hover:bg-[#b8e600] font-bold uppercase tracking-wider"
+                                    >
+                                        Done
+                                    </Button>
+                                </DialogFooter>
+                            </>
+                        ) : (
+                            <>
+                                <DialogHeader>
+                                    <DialogTitle className="text-xl font-bold uppercase tracking-tight text-white flex items-center gap-2">
+                                        <Headphones className="w-5 h-5 text-[#ccff00]" />
+                                        Contact Support
+                                    </DialogTitle>
+                                    <DialogDescription className="text-gray-400">
+                                        Describe your issue and we&apos;ll get back to you via email.
+                                    </DialogDescription>
+                                </DialogHeader>
+
+                                {error && (
+                                    <Alert variant="destructive" className="bg-red-500/10 border-red-500/50 text-red-500">
+                                        <AlertTriangle className="h-4 w-4" />
+                                        <AlertTitle>Error</AlertTitle>
+                                        <AlertDescription>{error}</AlertDescription>
+                                    </Alert>
+                                )}
+
+                                <div className="space-y-4 py-2">
+                                    {/* Category Select */}
+                                    <div className="space-y-2">
+                                        <Label htmlFor="category" className="text-xs uppercase font-bold text-gray-500">Category</Label>
+                                        <select
+                                            id="category"
+                                            value={category}
+                                            onChange={(e) => setCategory(e.target.value)}
+                                            className="w-full h-10 px-3 bg-[#111] border border-[#333] text-white text-sm font-mono rounded-md focus:outline-none focus:border-[#ccff00] appearance-none cursor-pointer"
+                                        >
+                                            {categories.map((cat) => (
+                                                <option key={cat.value} value={cat.value} className="bg-[#111]">
+                                                    {cat.label}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    {/* Subject */}
+                                    <div className="space-y-2">
+                                        <Label htmlFor="support-subject" className="text-xs uppercase font-bold text-gray-500">Subject</Label>
+                                        <Input
+                                            id="support-subject"
+                                            placeholder="Brief description of your issue"
+                                            value={subject}
+                                            onChange={(e) => setSubject(e.target.value)}
+                                            className="bg-[#111] border-[#333] text-white font-mono"
+                                            maxLength={100}
+                                        />
+                                    </div>
+
+                                    {/* Message */}
+                                    <div className="space-y-2">
+                                        <Label htmlFor="support-message" className="text-xs uppercase font-bold text-gray-500">Message</Label>
+                                        <Textarea
+                                            id="support-message"
+                                            placeholder="Describe your issue in detail..."
+                                            value={message}
+                                            onChange={(e) => setMessage(e.target.value)}
+                                            className="bg-[#111] border-[#333] text-white font-mono min-h-[120px] resize-none"
+                                            maxLength={1000}
+                                        />
+                                        <p className="text-[10px] text-gray-600 text-right font-mono">{message.length}/1000</p>
+                                    </div>
+
+
+
+                                    {/* Email Consent Checkbox */}
+                                    <div className="flex items-start space-x-3 p-3 bg-[#0a0a0a] border border-[#222] rounded-md">
+                                        <Checkbox
+                                            id="agree-email"
+                                            checked={agreeToEmail}
+                                            onCheckedChange={(checked) => setAgreeToEmail(checked === true)}
+                                            className="mt-0.5 border-[#444] data-[state=checked]:bg-[#ccff00] data-[state=checked]:border-[#ccff00] data-[state=checked]:text-black"
+                                        />
+                                        <Label htmlFor="agree-email" className="text-xs text-gray-400 leading-relaxed cursor-pointer">
+                                            I agree to be contacted via email regarding this support request. QuizWhiz may use my email to respond to this inquiry.
+                                        </Label>
+                                    </div>
+                                </div>
+
+                                <DialogFooter className="gap-2 sm:gap-0">
+                                    <Button
+                                        variant="ghost"
+                                        onClick={() => setIsOpen(false)}
+                                        disabled={isLoading}
+                                        className="text-gray-400 hover:text-white"
+                                    >
+                                        Cancel
+                                    </Button>
+                                    <Button
+                                        onClick={handleSubmit}
+                                        disabled={isLoading || !agreeToEmail || !subject.trim() || !message.trim()}
+                                        className="bg-[#ccff00] text-black hover:bg-[#b8e600] font-bold uppercase tracking-wider"
+                                    >
+                                        {isLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Send className="w-4 h-4 mr-2" />}
+                                        Send Message
+                                    </Button>
+                                </DialogFooter>
+                            </>
+                        )}
+                    </DialogContent>
+                </Dialog>
+            </div>
+        </div>
     );
 }
 
