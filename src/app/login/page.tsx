@@ -225,7 +225,7 @@ export default function LoginPage() {
               </h1>
             </div>
 
-            <p className="text-gray-500 font-mono text-xs uppercase tracking-widest">
+            <p className="text-gray-400 font-mono text-xs uppercase tracking-widest">
               {isSignUp ? (otpSent ? `> Enter code sent to: ${email}` : '> Create a new account') : '> Sign in to your account'}
             </p>
           </div>
@@ -244,12 +244,12 @@ export default function LoginPage() {
               <div className="space-y-4">
 
                 <div className="space-y-1 group">
-                  <label className="text-[10px] font-mono text-gray-500 uppercase tracking-widest group-focus-within:text-[#ccff00] transition-colors">Email Address</label>
+                  <label className="text-[10px] font-mono text-gray-400 uppercase tracking-widest group-focus-within:text-[#ccff00] transition-colors">Email Address</label>
                   <div className="relative">
                     <input
                       type="email"
                       required
-                      className="w-full bg-[#0a0a0a] border border-[#333] p-4 text-white font-mono placeholder:text-gray-800 focus:border-[#ccff00] focus:outline-none focus:shadow-[0_0_15px_rgba(204,255,0,0.2)] transition-all"
+                      className="w-full bg-[#0a0a0a] border border-[#333] p-4 text-white font-mono placeholder:text-gray-500 focus:border-[#ccff00] focus:outline-none focus:shadow-[0_0_15px_rgba(204,255,0,0.2)] transition-all"
                       placeholder="hello@example.com"
                       value={email}
                       onChange={e => setEmail(e.target.value)}
@@ -259,12 +259,12 @@ export default function LoginPage() {
                 </div>
 
                 <div className="space-y-1 group">
-                  <label className="text-[10px] font-mono text-gray-500 uppercase tracking-widest group-focus-within:text-[#ccff00] transition-colors">Password</label>
+                  <label className="text-[10px] font-mono text-gray-400 uppercase tracking-widest group-focus-within:text-[#ccff00] transition-colors">Password</label>
                   <div className="relative">
                     <input
                       type={showPassword ? "text" : "password"}
                       required
-                      className="w-full bg-[#0a0a0a] border border-[#333] p-4 text-white font-mono placeholder:text-gray-800 focus:border-[#ccff00] focus:outline-none focus:shadow-[0_0_15px_rgba(204,255,0,0.2)] transition-all"
+                      className="w-full bg-[#0a0a0a] border border-[#333] p-4 text-white font-mono placeholder:text-gray-500 focus:border-[#ccff00] focus:outline-none focus:shadow-[0_0_15px_rgba(204,255,0,0.2)] transition-all"
                       placeholder="••••••••"
                       value={password}
                       onChange={e => setPassword(e.target.value)}
@@ -335,7 +335,7 @@ export default function LoginPage() {
 
           {/* Footer Switch */}
           <div className="mt-8 text-center">
-            <p className="text-xs font-mono text-gray-600 uppercase mb-2">
+            <p className="text-xs font-mono text-gray-400 uppercase mb-2">
               {isSignUp ? '> Already have an account?' : '> New user?'}
             </p>
             <button
