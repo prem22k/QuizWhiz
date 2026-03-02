@@ -231,6 +231,53 @@ app.post('/log-user', async (req, res) => {
     }
 });
 
+// ─── Customer Support Email ──────────────────────────────────────────
+app.post('/contact-support', async (req, res) => {
+    const { name, email, subject, message, category } = req.body;
+
+    if (!email || !message || !subject) {
+        return res.status(400).json({ error: 'Missing required fields (email, subject, message)' });
+    }
+
+    const adminEmail = process.env.ADMIN_EMAIL || 'consolemaster.app@gmail.com';
+
+    let htmlContent = readTemplate('support');
+    if (htmlContent) {
+        htmlContent = htmlContent
+            .replace(/{{USER_NAME}}/g, name || 'Unknown User')
+            .replace(/{{USER_EMAIL}}/g, email)
+            .replace(/{{CATEGORY}}/g, category || 'General')
+            .replace(/{{SUBJECT}}/g, subject)
+            .replace(/{{MESSAGE}}/g, message.replace(/\n/g, '<br>'))
+            .replace(/{{TIMESTAMP}}/g, new Date().toLocaleString());
+    } else {
+        htmlContent = `
+            <h3>Customer Support Request</h3>
+            <p><strong>From:</strong> ${name || 'Unknown'} (${email})</p>
+            <p><strong>Category:</strong> ${category || 'General'}</p>
+            <p><strong>Subject:</strong> ${subject}</p>
+            <p><strong>Message:</strong></p>
+            <p>${message.replace(/\n/g, '<br>')}</p>
+        `;
+    }
+
+    try {
+        const result = await sendGmail({
+            to: adminEmail,
+            subject: `[Support] ${subject}`,
+            text: `Support request from ${name} (${email}):\n\nCategory: ${category || 'General'}\nSubject: ${subject}\n\n${message}`,
+            html: htmlContent,
+        });
+
+        if (!result) return res.json({ success: true, warning: 'Email mocked (missing credentials)' });
+        if (!result.success) return res.status(500).json({ error: 'Failed to send support email' });
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Failed to send support email:', error.message);
+        res.status(500).json({ error: 'Failed to send support email' });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });

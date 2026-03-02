@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, fetchSignInMethodsForEmail } from 'firebase/auth';
@@ -14,6 +14,8 @@ import clsx from 'clsx';
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('redirect') || '/admin';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,12 +28,12 @@ export default function LoginPage() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        console.log('✅ User already logged in, redirecting to admin dashboard...');
-        router.push('/admin');
+        console.log('✅ User already logged in, redirecting...');
+        router.push(redirectTo);
       }
     });
     return () => unsubscribe();
-  }, [router]);
+  }, [router, redirectTo]);
   useEffect(() => {
     setOtpSent(false);
     setEnteredOtp('');
@@ -66,7 +68,7 @@ export default function LoginPage() {
           const nameGuess = result.user.displayName || emailToCheck.split('@')[0];
           await logNewUser({ name: nameGuess, email: emailToCheck });
         }
-        router.push('/admin');
+        router.push(redirectTo);
       }
     } catch (error: any) {
       console.error('❌ Google Login failed:', error);
@@ -141,7 +143,7 @@ export default function LoginPage() {
         const nameGuess = emailToCheck.split('@')[0];
         await logNewUser({ name: nameGuess, email: emailToCheck });
         sendWelcomeEmailAction(emailToCheck, nameGuess).catch(console.error);
-        router.push('/admin');
+        router.push(redirectTo);
       }
     } catch (error: any) {
       mapFirebaseError(error);
@@ -159,7 +161,7 @@ export default function LoginPage() {
         const emailToCheck = result.user.email.toLowerCase();
         const isAdmin = await isAdminEmail(emailToCheck);
         if (!isAdmin) await registerAdmin(emailToCheck);
-        router.push('/admin');
+        router.push(redirectTo);
       }
     } catch (error: any) {
       mapFirebaseError(error);
