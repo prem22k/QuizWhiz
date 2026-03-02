@@ -52,7 +52,7 @@ export default function TopicGrid() {
         setLoading(categoryId);
         try {
             console.log(`🎮 Starting Quick Game: ${topicName}`);
-            const quizId = await createQuickGame(topicName, 'medium');
+            const quizId = await createQuickGame(topicName, categoryId, 'medium');
             router.push(`/play/${quizId}`);
 
         } catch (error) {

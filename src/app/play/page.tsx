@@ -202,7 +202,7 @@ export default function HomePage() {
     if (loading) return;
     setLoading(categoryId);
     try {
-      const quizId = await createQuickGame(topicName, 'medium');
+      const quizId = await createQuickGame(topicName, categoryId, 'medium');
       router.push(`/play/game?quizId=${quizId}`);
     } catch (error) {
       console.error('Error starting game:', error);

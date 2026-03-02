@@ -49,9 +49,10 @@ export const generateQuizCode = (): string =>
  */
 export const createQuickGame = async (
   topic: string,
+  categoryId?: number | string,
   difficulty: 'easy' | 'medium' | 'hard' = 'medium'
 ): Promise<string> => {
-  console.log("🚀 createQuickGame called:", { topic, difficulty });
+  console.log("🚀 createQuickGame called:", { topic, categoryId, difficulty });
 
   try {
     let user = auth.currentUser;
@@ -66,7 +67,8 @@ export const createQuickGame = async (
     const quizId = quizDocRef.id;
 
     console.log("🌍 Fetching questions for quiz:", quizId);
-    const questions = await fetchQuestionsFromAPI(quizId, topic, 10, difficulty);
+    const fetchCategory = categoryId !== undefined ? categoryId : topic;
+    const questions = await fetchQuestionsFromAPI(quizId, fetchCategory, 10, difficulty);
     const quizData: Omit<Quiz, "id" | "createdAt"> & { createdAt: FieldValue } = {
       title: `${topic} Trivia`,
       description: `A ${difficulty} ${topic} quiz generated for you.`,
